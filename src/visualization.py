@@ -171,3 +171,30 @@ def plot_vector_field(
     Path(save_path).parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(save_path, dpi=200, bbox_inches="tight")
     plt.close()
+
+
+def plot_sample_panels(
+    samples_by_title: dict[str, torch.Tensor],
+    save_path: str,
+    s: float = 3.0,
+) -> None:
+    """
+    Plot several 2D sample clouds side by side.
+    """
+    n_cols = len(samples_by_title)
+    plt.figure(figsize=(4 * n_cols, 4))
+
+    for idx, (title, samples) in enumerate(samples_by_title.items(), start=1):
+        if samples.ndim != 2 or samples.shape[1] != 2:
+            raise ValueError(f"Expected samples with shape [n, 2], got {samples.shape}.")
+        x_np = samples.detach().cpu().numpy()
+
+        plt.subplot(1, n_cols, idx)
+        plt.scatter(x_np[:, 0], x_np[:, 1], s=s, alpha=0.6)
+        plt.axis("equal")
+        plt.title(title)
+        plt.grid(alpha=0.2)
+
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(save_path, dpi=200, bbox_inches="tight")
+    plt.close()
