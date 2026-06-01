@@ -99,6 +99,33 @@ def ddpm_loss(
     return F.mse_loss(pred_noise, noise)
 
 
+def ddpm_conditional_loss(
+    model,
+    x0: torch.Tensor,
+    y: torch.Tensor,
+    schedule: DDPMSchedule,
+    null_label: int,
+    drop_label_prob: float = 0.1,
+) -> torch.Tensor:
+    """
+    DDPM noise prediction loss for class-conditional models trained with CFG.
+    """
+    if not 0.0 <= drop_label_prob <= 1.0:
+        raise ValueError("drop_label_prob must be in [0, 1].")
+
+    batch_size = x0.shape[0]
+    t = torch.randint(0, schedule.timesteps, (batch_size,), device=x0.device)
+    noise = torch.randn_like(x0)
+    xt = q_sample(x0=x0, t=t, noise=noise, schedule=schedule)
+
+    y_train = y.to(x0.device).clone()
+    drop_mask = torch.rand(batch_size, device=x0.device) < drop_label_prob
+    y_train[drop_mask] = null_label
+
+    pred_noise = model(xt, t, y_train)
+    return F.mse_loss(pred_noise, noise)
+
+
 @torch.no_grad()
 def p_sample_step(
     model,

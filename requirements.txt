@@ -1,6 +1,7 @@
 numpy
 matplotlib
 torch
+torchvision
 tqdm
 ipykernel
 jupyter
