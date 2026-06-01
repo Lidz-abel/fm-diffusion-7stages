@@ -100,3 +100,74 @@ def plot_brownian_paths(
         plt.savefig(save_path, dpi=200, bbox_inches="tight")
 
     plt.close()
+
+
+def plot_nfe_samples(
+    samples_by_nfe: dict[int, torch.Tensor],
+    save_path: str,
+) -> None:
+    """
+    Plot samples generated with different NFE values.
+    """
+    n_cols = len(samples_by_nfe)
+    plt.figure(figsize=(4 * n_cols, 4))
+
+    for idx, (nfe, samples) in enumerate(samples_by_nfe.items(), start=1):
+        x_np = samples.detach().cpu().numpy()
+
+        plt.subplot(1, n_cols, idx)
+        plt.scatter(x_np[:, 0], x_np[:, 1], s=3, alpha=0.6)
+        plt.axis("equal")
+        plt.title(f"NFE={nfe}")
+        plt.grid(alpha=0.2)
+
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(save_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+
+@torch.no_grad()
+def plot_vector_field(
+    model,
+    t_value: float,
+    save_path: str,
+    xlim: tuple[float, float] = (-4.5, 4.5),
+    ylim: tuple[float, float] = (-4.5, 4.5),
+    grid_size: int = 25,
+    device: str = "cpu",
+) -> None:
+    """
+    Visualize learned vector field v_theta(x, t) at a fixed time t.
+    """
+    xs = torch.linspace(xlim[0], xlim[1], grid_size, device=device)
+    ys = torch.linspace(ylim[0], ylim[1], grid_size, device=device)
+
+    grid_x, grid_y = torch.meshgrid(xs, ys, indexing="xy")
+    points = torch.stack([grid_x.reshape(-1), grid_y.reshape(-1)], dim=-1)
+
+    t = torch.full((points.shape[0], 1), t_value, device=device)
+    velocity = model(points, t)
+
+    p = points.detach().cpu().numpy()
+    v = velocity.detach().cpu().numpy()
+
+    plt.figure(figsize=(6, 6))
+    plt.quiver(
+        p[:, 0],
+        p[:, 1],
+        v[:, 0],
+        v[:, 1],
+        angles="xy",
+        scale_units="xy",
+        scale=20,
+        width=0.003,
+    )
+    plt.xlim(*xlim)
+    plt.ylim(*ylim)
+    plt.axis("equal")
+    plt.title(f"Learned vector field at t={t_value:.2f}")
+    plt.grid(alpha=0.2)
+
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(save_path, dpi=200, bbox_inches="tight")
+    plt.close()
