@@ -1,0 +1,45 @@
+project:
+  name: cifar10_unet_rectified_flow
+  seed: 42
+
+data:
+  dataset: cifar10
+  image_size: 32
+  in_channels: 3
+  num_classes: 10
+  data_dir: data
+
+model:
+  type: unet
+  base_channels: 128
+  time_dim: 512
+  num_classes: 10
+  null_label: 10
+  use_attention: false
+
+flow:
+  path_type: rectified
+  t_min: 0.0
+  t_max: 1.0
+  drop_label_prob: 0.1
+
+train:
+  epochs: 100
+  batch_size: 256
+  lr: 0.0002
+  weight_decay: 0.0
+  grad_clip: 1.0
+  device: cuda
+  num_workers: 8
+  save_every: 5000
+
+sample:
+  solver: euler
+  nfe: 50
+  num_samples: 64
+  cfg_scale: 1.0
+
+paths:
+  save_path: checkpoints/cifar10_unet_fm.pt
+  log_path: results/cifar_flow/training_log.csv
+  figure_dir: figures/cifar_flow

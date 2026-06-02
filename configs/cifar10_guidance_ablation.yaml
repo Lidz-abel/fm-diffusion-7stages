@@ -1,0 +1,18 @@
+experiment:
+  name: guidance_ablation_unet
+  seed: 42
+
+model:
+  type: unet
+  checkpoint: checkpoints/cifar10_unet_fm.pt
+
+sample:
+  solver: heun
+  nfe: 50
+  cfg_scales: [0, 1, 2, 4]
+  num_per_class: 8
+  device: cuda
+
+output:
+  figure_path: figures/cifar_flow/guidance_ablation_unet.png
+  csv_path: results/cifar_flow/guidance_ablation.csv

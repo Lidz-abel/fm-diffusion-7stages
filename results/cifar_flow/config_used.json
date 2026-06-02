@@ -1,0 +1,23 @@
+{
+  "base_channels": 16,
+  "batch_size": 8,
+  "config_path": "/home/ldz/fm-diffusion-flowdcn-7stages/results/cifar_flow/config_used.json",
+  "curve_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/cifar_flow/first_stage_training_curve.png",
+  "data_dir": "/home/ldz/fm-diffusion-flowdcn-7stages/data",
+  "device": "cpu",
+  "drop_label_prob": 0.1,
+  "epochs": 1,
+  "grad_clip": 1.0,
+  "log_path": "/home/ldz/fm-diffusion-flowdcn-7stages/results/cifar_flow/training_log.csv",
+  "lr": 0.0002,
+  "max_steps": 2,
+  "null_label": 10,
+  "num_classes": 10,
+  "num_workers": 0,
+  "save_every": 5000,
+  "save_path": "checkpoints/cifar10_unet_fm.pt",
+  "seed": 42,
+  "time_dim": 64,
+  "use_attention": false,
+  "weight_decay": 0.0
+}

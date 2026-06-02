@@ -1,0 +1,19 @@
+experiment:
+  name: nfe_ablation_unet
+  seed: 42
+
+model:
+  type: unet
+  checkpoint: checkpoints/cifar10_unet_fm.pt
+
+sample:
+  solver: euler
+  nfe_list: [5, 10, 20, 50, 100]
+  cfg_scale: 1.0
+  num_per_class: 8
+  batch_size: 80
+  device: cuda
+
+output:
+  figure_path: figures/cifar_flow/nfe_ablation_unet.png
+  csv_path: results/cifar_flow/nfe_ablation.csv

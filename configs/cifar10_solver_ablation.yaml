@@ -1,0 +1,18 @@
+experiment:
+  name: solver_ablation_unet
+  seed: 42
+
+model:
+  type: unet
+  checkpoint: checkpoints/cifar10_unet_fm.pt
+
+sample:
+  solvers: [euler, heun]
+  nfe: 20
+  cfg_scale: 1.0
+  num_per_class: 8
+  device: cuda
+
+output:
+  figure_path: figures/cifar_flow/solver_ablation_unet.png
+  csv_path: results/cifar_flow/solver_ablation.csv

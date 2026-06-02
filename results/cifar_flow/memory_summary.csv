@@ -1,0 +1,5 @@
+model_type,solver,nfe,cfg_scale,num_samples,batch_size,seconds_total,seconds_per_image,max_memory_mb,device,seed,checkpoint,parameter_count
+unet,euler,1,1.0,4,4,0.033480,0.008370,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
+unet,euler,2,1.0,4,4,0.023504,0.005876,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
+unet,heun,1,1.0,4,4,0.023023,0.005756,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
+unet,heun,2,1.0,4,4,0.046274,0.011569,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
