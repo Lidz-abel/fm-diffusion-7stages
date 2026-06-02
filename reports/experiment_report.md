@@ -1,8 +1,8 @@
-# Experiment Report: Day 1-4
+# Experiment Report: Day 1-5
 
 ## 1. Overview
 
-This report summarizes the completed Day 1-4 experiments in the 7-stage Flow Matching, Diffusion Models, and FlowDCN learning project.
+This report summarizes the completed Day 1-5 experiments in the 7-stage Flow Matching, Diffusion Models, and FlowDCN learning project.
 
 The completed scope covers:
 
@@ -10,6 +10,7 @@ The completed scope covers:
 - Day 2: 2D Flow Matching, ODE sampling, NFE comparison, vector field visualization
 - Day 3: 2D DDPM / score matching, forward noising, reverse sampling, FM vs DDPM comparison
 - Day 4: MNIST class-conditional diffusion with classifier-free guidance
+- Day 5: fast sampling summary, toy discrete diffusion, unified theory figures
 
 ## 2. Day 1: ODE, SDE, and Probability Paths
 
@@ -170,7 +171,48 @@ Available documentation:
 
 The notebook contains sections for MNIST data visualization, forward noising, U-Net explanation, CFG scale comparison, and U-Net / DiT / latent diffusion comparison.
 
-## 6. Day 1-4 Comparison
+## 6. Day 5: Fast Sampling and Discrete Diffusion
+
+### Code
+
+Implemented:
+
+- `src/fast_sampling.py`
+- `src/discrete_diffusion.py`
+- `src/discrete_dataset.py`
+- `src/discrete_denoiser.py`
+- `src/theory_plotting.py`
+- `labs/lab5/01_run_nfe_compare.py`
+- `labs/lab5/02_run_mask_corruption.py`
+- `labs/lab5/03_train_discrete_denoiser.py`
+- `labs/lab5/04_sample_discrete_denoiser.py`
+- `labs/lab5/05_make_stage5_figures.py`
+
+### Experiments
+
+Generated:
+
+- `figures/day5/nfe_compare.png`
+- `figures/day5/mask_corruption_process.png`
+- `figures/day5/discrete_reverse_process.png`
+- `figures/day5/final_unified_framework.png`
+- `figures/day5/continuous_vs_discrete_diffusion.png`
+
+### Summary
+
+Day 5 connects the continuous experiments to fast sampling and discrete diffusion.
+
+NFE comparison shows that sampling cost is controlled by the number of model evaluations. Fewer evaluations are faster, but generally less accurate.
+
+The toy discrete diffusion lab uses mask corruption:
+
+```text
+token -> token or [MASK]
+```
+
+This illustrates why categorical data cannot be perturbed by Gaussian noise directly. The reverse model predicts token logits and reconstructs a sequence from a fully masked initial state.
+
+## 7. Day 1-5 Comparison
 
 | Day | Method | Training target | Sampling method |
 | --- | --- | --- | --- |
@@ -178,10 +220,11 @@ The notebook contains sections for MNIST data visualization, forward noising, U-
 | Day 2 | Flow Matching | velocity \(z-x_0\) | ODE integration |
 | Day 3 | DDPM | noise \(\epsilon\) | reverse denoising chain |
 | Day 4 | Conditional DDPM + CFG | noise \(\epsilon\) with class labels | guided reverse denoising |
+| Day 5 | Discrete diffusion | token distribution | reverse token denoising |
 
-## 7. Current Status
+## 8. Current Status
 
-Day 1-4 code, notes, and figure outputs are complete at the project level.
+Day 1-5 code, notes, and figure outputs are complete at the project level.
 
 The Stage 4 figures currently demonstrate the full code path and CFG workflow. For final-quality MNIST samples, run a longer training job:
 
@@ -189,4 +232,11 @@ The Stage 4 figures currently demonstrate the full code path and CFG workflow. F
 conda activate fm_diffusion
 python labs/lab4/train_mnist_cfg.py --epochs 20 --batch_size 128 --device cuda
 python labs/lab4/eval_cfg_scales.py --scales 0 1 2 4 7 --device cuda
+```
+
+For Stage 5 discrete diffusion:
+
+```bash
+python labs/lab5/03_train_discrete_denoiser.py --epochs 50 --batch_size 128 --device cuda
+python labs/lab5/04_sample_discrete_denoiser.py --device cuda
 ```

@@ -1,0 +1,25 @@
+dataset:
+  num_samples: 10000
+  seq_len: 8
+  vocab_size: 10
+  mask_token_id: 0
+
+diffusion:
+  num_steps: 100
+  beta_start: 0.0001
+  beta_end: 0.3
+
+model:
+  hidden_dim: 128
+  num_layers: 2
+  num_heads: 4
+
+train:
+  batch_size: 128
+  epochs: 50
+  lr: 0.001
+  device: cpu
+  save_path: checkpoints/discrete_denoiser_toy.pt
+
+figures:
+  save_dir: figures/day5
