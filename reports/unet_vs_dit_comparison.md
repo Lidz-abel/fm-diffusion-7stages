@@ -7,11 +7,11 @@ On MNIST, U-Net generally has a stronger convolutional inductive bias and is eas
 ## Measured Smoke-Test Run
 
 - U-Net parameters: `2,155,649`
-- Mini-DiT parameters: `26,128`
-- U-Net sampling time: `0.3219s`
-- Mini-DiT sampling time: `0.0678s`
+- Mini-DiT parameters: `2,831,824`
+- U-Net sampling time: `6.2414s`
+- Mini-DiT sampling time: `5.4097s`
 - CFG scale: `4.0`
-- Timesteps: `10`
+- Timesteps: `1000`
 
 ## Interpretation
 
