@@ -1,5 +1,11 @@
 model_type,solver,nfe,cfg_scale,num_samples,batch_size,seconds_total,seconds_per_image,max_memory_mb,device,seed,checkpoint,parameter_count
-unet,euler,1,1.0,4,4,0.033480,0.008370,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
-unet,euler,2,1.0,4,4,0.023504,0.005876,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
-unet,heun,1,1.0,4,4,0.023023,0.005756,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
-unet,heun,2,1.0,4,4,0.046274,0.011569,0.00,cpu,42,checkpoints/cifar10_unet_fm.pt,498051
+unet,euler,5,1.0,80,80,0.595701,0.007446,565.29,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,euler,10,1.0,80,80,0.175644,0.002196,566.23,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,euler,20,1.0,80,80,0.575723,0.007197,566.23,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,euler,50,1.0,80,80,1.603850,0.020048,566.23,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,euler,100,1.0,80,80,3.178630,0.039733,566.23,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,heun,5,1.0,80,80,0.337574,0.004220,568.11,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,heun,10,1.0,80,80,0.644851,0.008061,568.11,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,heun,20,1.0,80,80,1.255486,0.015694,568.11,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,heun,50,1.0,80,80,3.217084,0.040214,568.11,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195
+unet,heun,100,1.0,80,80,6.349106,0.079364,568.11,cuda,42,checkpoints/cifar10_unet_fm.pt,31624195

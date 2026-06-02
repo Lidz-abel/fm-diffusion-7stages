@@ -56,6 +56,8 @@ def main():
     device = torch.device(args.device if args.device != "cuda" or torch.cuda.is_available() else "cpu")
     model, ckpt_args = load_unet(Path(args.ckpt), device)
     labels = (torch.arange(args.num_samples, device=device) % 10).long()
+    Path(args.runtime_csv).unlink(missing_ok=True)
+    Path(args.memory_csv).unlink(missing_ok=True)
     rows = []
     param_count = count_parameters(model)
 

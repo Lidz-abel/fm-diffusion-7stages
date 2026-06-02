@@ -1,3 +1,3 @@
 model_type,solver,nfe,cfg_scale,num_samples,seconds_total,seconds_per_image,max_memory_mb,checkpoint,mean,std,min,max
-unet,euler,1,1.0,10,0.100814,0.010081,0.00,checkpoints/cifar10_unet_fm.pt,-0.02973994053900242,0.7370418310165405,-1.0,1.0
-unet,heun,1,1.0,10,0.028770,0.002877,0.00,checkpoints/cifar10_unet_fm.pt,-0.027023879811167717,0.7307931184768677,-1.0,1.0
+unet,euler,20,1.0,80,1.590036,0.019875,565.29,checkpoints/cifar10_unet_fm.pt,-0.07892420887947083,0.41997790336608887,-1.0,1.0
+unet,heun,20,1.0,80,2.805410,0.035068,568.23,checkpoints/cifar10_unet_fm.pt,-0.09485069662332535,0.47813835740089417,-1.0,1.0
