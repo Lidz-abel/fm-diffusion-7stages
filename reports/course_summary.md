@@ -67,7 +67,17 @@ image -> encoder -> latent diffusion -> decoder -> image
 
 This reduces computational cost.
 
-## 6. Discrete Diffusion
+## 6. DiT
+
+DiT replaces the U-Net denoiser with a Transformer over patch tokens.
+
+```text
+x_t image -> patchify -> DiT blocks -> predicted noise patches -> unpatchify
+```
+
+The diffusion objective is unchanged. DiT is an architecture choice for the denoising network, not a new training target.
+
+## 7. Discrete Diffusion
 
 Discrete diffusion replaces Gaussian noise with categorical transitions.
 
@@ -79,7 +89,7 @@ token -> token or [MASK]
 
 The reverse model predicts original tokens from corrupted sequences.
 
-## 7. Unified View
+## 8. Unified View
 
 | Method | State space | Target | Sampling |
 | --- | --- | --- | --- |
@@ -87,4 +97,5 @@ The reverse model predicts original tokens from corrupted sequences.
 | DDPM | continuous | noise | reverse denoising |
 | Score-SDE | continuous | score | reverse SDE / ODE |
 | CFG | continuous or latent | guided denoising | conditional reverse process |
+| DiT | continuous or latent | architecture for prediction | patch-token denoising |
 | Discrete diffusion | categorical | token distribution | reverse token denoising |

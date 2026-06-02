@@ -1,0 +1,21 @@
+dataset: mnist
+image_size: 28
+patch_size: 4
+in_channels: 1
+num_classes: 10
+null_label: 10
+
+timesteps: 1000
+batch_size: 128
+epochs: 20
+lr: 0.0002
+drop_label_prob: 0.1
+
+model:
+  hidden_dim: 192
+  depth: 4
+  num_heads: 4
+  mlp_ratio: 4.0
+
+checkpoint: checkpoints/mnist_dit.pt
+figures_dir: figures/dit/

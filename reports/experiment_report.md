@@ -10,6 +10,7 @@ The completed scope covers:
 - Day 2: 2D Flow Matching, ODE sampling, NFE comparison, vector field visualization
 - Day 3: 2D DDPM / score matching, forward noising, reverse sampling, FM vs DDPM comparison
 - Day 4: MNIST class-conditional diffusion with classifier-free guidance
+- Stage 4.5: Mini-DiT from scratch and U-Net vs DiT comparison
 - Day 5: fast sampling summary, toy discrete diffusion, unified theory figures
 
 ## 2. Day 1: ODE, SDE, and Probability Paths
@@ -171,7 +172,35 @@ Available documentation:
 
 The notebook contains sections for MNIST data visualization, forward noising, U-Net explanation, CFG scale comparison, and U-Net / DiT / latent diffusion comparison.
 
-## 6. Day 5: Fast Sampling and Discrete Diffusion
+## 6. Stage 4.5: Mini-DiT Lab
+
+### Code
+
+Implemented:
+
+- `src/dit/patch_embed.py`
+- `src/dit/embeddings.py`
+- `src/dit/dit_block.py`
+- `src/dit/model.py`
+- `labs/lab_dit/train_mnist_dit.py`
+- `labs/lab_dit/sample_mnist_dit.py`
+- `labs/lab_dit/compare_unet_dit.py`
+
+### Experiments
+
+Generated:
+
+- `figures/dit/mnist_dit_samples.png`
+- `figures/dit/cfg_scale_comparison.png`
+- `figures/dit/unet_vs_dit_samples.png`
+- `figures/dit/dit_architecture.png`
+- `reports/unet_vs_dit_comparison.md`
+
+### Summary
+
+Mini-DiT keeps the DDPM noise-prediction objective but replaces the U-Net denoiser with a Transformer over image patches. The implementation includes patchify/unpatchify, time and class embeddings, AdaLN-Zero DiT blocks, CFG-compatible sampling, and a U-Net vs DiT comparison report.
+
+## 7. Day 5: Fast Sampling and Discrete Diffusion
 
 ### Code
 
@@ -212,7 +241,7 @@ token -> token or [MASK]
 
 This illustrates why categorical data cannot be perturbed by Gaussian noise directly. The reverse model predicts token logits and reconstructs a sequence from a fully masked initial state.
 
-## 7. Day 1-5 Comparison
+## 8. Day 1-5 Comparison
 
 | Day | Method | Training target | Sampling method |
 | --- | --- | --- | --- |
@@ -220,9 +249,10 @@ This illustrates why categorical data cannot be perturbed by Gaussian noise dire
 | Day 2 | Flow Matching | velocity \(z-x_0\) | ODE integration |
 | Day 3 | DDPM | noise \(\epsilon\) | reverse denoising chain |
 | Day 4 | Conditional DDPM + CFG | noise \(\epsilon\) with class labels | guided reverse denoising |
+| Stage 4.5 | Mini-DiT DDPM | noise \(\epsilon\) with class labels | Transformer denoising over patches |
 | Day 5 | Discrete diffusion | token distribution | reverse token denoising |
 
-## 8. Current Status
+## 9. Current Status
 
 Day 1-5 code, notes, and figure outputs are complete at the project level.
 
