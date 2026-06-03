@@ -1,0 +1,22 @@
+experiment:
+  name: cifar10_ddim_sampling_strong
+  seed: 42
+
+model:
+  ckpt: checkpoints/cifar10_unet_ddpm_strong_500ep.pt
+  use_ema: true
+
+sample:
+  sampler: ddim
+  timesteps: 1000
+  ddim_steps: 250
+  ddim_eta: 0.0
+  clip_x0: true
+  cfg_scale: 2.0
+  all_classes: true
+  num_per_class: 8
+  device: cuda
+
+output:
+  save_path: figures/cifar_flow/final_ddim_strong_cfg2_steps250.png
+  config_out: results/cifar_flow/sample_config_ddim_strong_cfg2_steps250.json

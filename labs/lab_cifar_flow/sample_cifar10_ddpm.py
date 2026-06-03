@@ -8,15 +8,50 @@ import torch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.append(str(ROOT))
 
-from src.cfg_sampler import sample_ddpm_cfg
+from src.cfg_sampler import sample_ddim_cfg, sample_ddpm_cfg
 from src.cifar10_dataset import CIFAR10_CLASSES
 from src.diffusion import DDPMSchedule
+from src.experiment_utils import write_json
 from src.image_unet import CIFAR10FlowUNet
 from src.utils import save_image_grid
 
 
+def load_config_defaults(config_path: Path) -> dict:
+    try:
+        import yaml
+    except ImportError as exc:
+        raise ImportError("Install PyYAML or run without --config.") from exc
+
+    with config_path.open("r") as f:
+        config = yaml.safe_load(f) or {}
+
+    defaults = {}
+    defaults.update(config.get("model", {}))
+    defaults.update(config.get("sample", {}))
+    defaults.update(config.get("output", {}))
+    keys = {
+        "ckpt",
+        "class_id",
+        "all_classes",
+        "num_samples",
+        "num_per_class",
+        "cfg_scale",
+        "timesteps",
+        "sampler",
+        "ddim_steps",
+        "ddim_eta",
+        "clip_x0",
+        "use_ema",
+        "device",
+        "save_path",
+        "config_out",
+    }
+    return {key: defaults[key] for key in keys if key in defaults}
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, default=None)
     parser.add_argument("--ckpt", type=str, default=str(ROOT / "checkpoints" / "cifar10_unet_ddpm_strong.pt"))
     parser.add_argument("--class_id", type=int, default=3)
     parser.add_argument("--all_classes", action="store_true")
@@ -24,9 +59,17 @@ def parse_args():
     parser.add_argument("--num_per_class", type=int, default=8)
     parser.add_argument("--cfg_scale", type=float, default=2.0)
     parser.add_argument("--timesteps", type=int, default=None)
+    parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"])
+    parser.add_argument("--ddim_steps", type=int, default=100)
+    parser.add_argument("--ddim_eta", type=float, default=0.0)
+    parser.add_argument("--clip_x0", action="store_true")
     parser.add_argument("--use_ema", action="store_true")
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--save_path", type=str, default=str(ROOT / "figures" / "cifar_flow" / "final_ddpm_strong_cfg2.png"))
+    parser.add_argument("--config_out", type=str, default=str(ROOT / "results" / "cifar_flow" / "sample_config_ddpm_strong.json"))
+    config_args, _ = parser.parse_known_args()
+    if config_args.config is not None:
+        parser.set_defaults(**load_config_defaults(Path(config_args.config)))
     return parser.parse_args()
 
 
@@ -62,6 +105,7 @@ def build_labels(args, device: torch.device) -> torch.Tensor:
 def main():
     args = parse_args()
     device = torch.device(args.device if args.device != "cuda" or torch.cuda.is_available() else "cpu")
+    write_json(args.config_out, vars(args))
     model, ckpt_args = load_model(Path(args.ckpt), device, use_ema=args.use_ema)
     timesteps = args.timesteps or ckpt_args.get("timesteps", 1000)
     schedule = DDPMSchedule(
@@ -71,18 +115,33 @@ def main():
         device=device,
     )
     labels = build_labels(args, device)
-    samples = sample_ddpm_cfg(
-        model=model,
-        shape=(labels.shape[0], 3, 32, 32),
-        y=labels,
-        schedule=schedule,
-        cfg_scale=args.cfg_scale,
-        null_label=ckpt_args.get("null_label", 10),
-        device=device,
-    )
+    if args.sampler == "ddpm":
+        samples = sample_ddpm_cfg(
+            model=model,
+            shape=(labels.shape[0], 3, 32, 32),
+            y=labels,
+            schedule=schedule,
+            cfg_scale=args.cfg_scale,
+            null_label=ckpt_args.get("null_label", 10),
+            device=device,
+        )
+    else:
+        samples = sample_ddim_cfg(
+            model=model,
+            shape=(labels.shape[0], 3, 32, 32),
+            y=labels,
+            schedule=schedule,
+            cfg_scale=args.cfg_scale,
+            null_label=ckpt_args.get("null_label", 10),
+            num_steps=args.ddim_steps,
+            eta=args.ddim_eta,
+            clip_x0=args.clip_x0,
+            device=device,
+        )
     nrow = args.num_per_class if args.all_classes else max(1, int(math.sqrt(labels.shape[0])))
     save_image_grid(samples.clamp(-1.0, 1.0), args.save_path, nrow=nrow)
-    print(f"Saved DDPM samples to: {args.save_path}")
+    print(f"Saved {args.sampler.upper()} samples to: {args.save_path}")
+    print(f"Saved sample config to: {args.config_out}")
 
 
 if __name__ == "__main__":
