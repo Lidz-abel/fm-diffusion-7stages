@@ -35,9 +35,10 @@ def main():
         num_workers=args.num_workers,
         download=True,
     )
-    x1, _ = next(iter(dataloader))
+    x1, labels = next(iter(dataloader))
     x1 = x1.to(device)
-    batch = sample_rectified_flow_tuple(x1)
+    labels = labels.to(device)
+    batch, _ = sample_rectified_flow_tuple(x1, y=labels)
 
     save_image_grid(x1[:16], save_dir / "debug_real_images.png", nrow=4)
     save_image_grid(batch.x0[:16], save_dir / "debug_noise_images.png", nrow=4)

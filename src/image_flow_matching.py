@@ -13,6 +13,57 @@ class RectifiedFlowBatch:
     target_v: torch.Tensor
 
 
+@torch.no_grad()
+def minibatch_greedy_ot_pairing(x0: torch.Tensor, x1: torch.Tensor) -> torch.Tensor:
+    """
+    Approximate minibatch OT coupling with greedy minimum-cost matching.
+
+    Returns indices that reorder x1 to be paired with x0.
+    """
+    batch_size = x0.shape[0]
+    x0_flat = x0.reshape(batch_size, -1).float()
+    x1_flat = x1.reshape(batch_size, -1).float()
+    cost = torch.cdist(x0_flat, x1_flat, p=2)
+    matched_x0 = torch.zeros(batch_size, device=x0.device, dtype=torch.bool)
+    matched_x1 = torch.zeros(batch_size, device=x0.device, dtype=torch.bool)
+    assignment = torch.empty(batch_size, device=x0.device, dtype=torch.long)
+
+    large = torch.finfo(cost.dtype).max / 4
+    work_cost = cost.clone()
+    for _ in range(batch_size):
+        flat_idx = torch.argmin(work_cost)
+        row = flat_idx // batch_size
+        col = flat_idx % batch_size
+        assignment[row] = col
+        matched_x0[row] = True
+        matched_x1[col] = True
+        work_cost[row, :] = large
+        work_cost[:, col] = large
+
+    if not matched_x0.all() or not matched_x1.all():
+        raise RuntimeError("Greedy OT pairing failed to produce a complete matching.")
+    return assignment
+
+
+def apply_coupling(
+    x0: torch.Tensor,
+    x1: torch.Tensor,
+    y: torch.Tensor | None,
+    coupling: str = "random",
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor | None]:
+    """
+    Pair noise and data samples before constructing the straight path.
+    """
+    if coupling == "random":
+        return x0, x1, y
+    if coupling == "minibatch_ot":
+        assignment = minibatch_greedy_ot_pairing(x0, x1)
+        x1_paired = x1[assignment]
+        y_paired = y[assignment] if y is not None else None
+        return x0, x1_paired, y_paired
+    raise ValueError(f"Unknown coupling: {coupling}.")
+
+
 def sample_time(
     batch_size: int,
     device: torch.device,
@@ -77,10 +128,12 @@ def apply_label_dropout(
 
 def sample_rectified_flow_tuple(
     x1: torch.Tensor,
+    y: torch.Tensor | None = None,
+    coupling: str = "random",
     time_sampling: str = "uniform",
     time_beta_alpha: float = 1.0,
     time_beta_beta: float = 1.0,
-) -> RectifiedFlowBatch:
+) -> tuple[RectifiedFlowBatch, torch.Tensor | None]:
     """
     Build the straight-path Rectified Flow tuple.
 
@@ -91,6 +144,7 @@ def sample_rectified_flow_tuple(
     """
     batch_size = x1.shape[0]
     x0 = torch.randn_like(x1)
+    x0, x1, y = apply_coupling(x0, x1, y, coupling=coupling)
     t = sample_time(
         batch_size=batch_size,
         device=x1.device,
@@ -102,7 +156,7 @@ def sample_rectified_flow_tuple(
     t_view = t.reshape(batch_size, *([1] * (x1.ndim - 1)))
     xt = (1.0 - t_view) * x0 + t_view * x1
     target_v = x1 - x0
-    return RectifiedFlowBatch(x0=x0, x1=x1, t=t, xt=xt, target_v=target_v)
+    return RectifiedFlowBatch(x0=x0, x1=x1, t=t, xt=xt, target_v=target_v), y
 
 
 def flow_matching_loss(
@@ -111,6 +165,7 @@ def flow_matching_loss(
     y: torch.Tensor,
     null_label: int | None = None,
     drop_label_prob: float = 0.0,
+    coupling: str = "random",
     time_sampling: str = "uniform",
     time_beta_alpha: float = 1.0,
     time_beta_beta: float = 1.0,
@@ -122,13 +177,17 @@ def flow_matching_loss(
 
     L = E || v_theta(x_t, t, y) - (x_1 - x_0) ||^2
     """
-    batch = sample_rectified_flow_tuple(
+    batch, y_paired = sample_rectified_flow_tuple(
         x1,
+        y=y.to(x1.device),
+        coupling=coupling,
         time_sampling=time_sampling,
         time_beta_alpha=time_beta_alpha,
         time_beta_beta=time_beta_beta,
     )
-    y_train = apply_label_dropout(y.to(x1.device), null_label, drop_label_prob)
+    if y_paired is None:
+        y_paired = y.to(x1.device)
+    y_train = apply_label_dropout(y_paired, null_label, drop_label_prob)
     pred_v = model(batch.xt, batch.t, y_train)
     per_sample_loss = F.mse_loss(pred_v, batch.target_v, reduction="none")
     per_sample_loss = per_sample_loss.reshape(x1.shape[0], -1).mean(dim=1)

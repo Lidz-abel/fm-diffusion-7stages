@@ -39,6 +39,7 @@ def parse_args():
     parser.add_argument("--num_classes", type=int, default=10)
     parser.add_argument("--null_label", type=int, default=10)
     parser.add_argument("--drop_label_prob", type=float, default=0.1)
+    parser.add_argument("--coupling", type=str, default="random", choices=["random", "minibatch_ot"])
     parser.add_argument("--time_sampling", type=str, default="uniform", choices=["uniform", "beta"])
     parser.add_argument("--time_beta_alpha", type=float, default=1.0)
     parser.add_argument("--time_beta_beta", type=float, default=1.0)
@@ -82,6 +83,7 @@ def load_config_defaults(config_path: Path) -> dict:
         "num_classes": "num_classes",
         "null_label": "null_label",
         "drop_label_prob": "drop_label_prob",
+        "coupling": "coupling",
         "time_sampling": "time_sampling",
         "time_beta_alpha": "time_beta_alpha",
         "time_beta_beta": "time_beta_beta",
@@ -220,6 +222,7 @@ def main():
                     y=labels,
                     null_label=args.null_label,
                     drop_label_prob=args.drop_label_prob,
+                    coupling=args.coupling,
                     time_sampling=args.time_sampling,
                     time_beta_alpha=args.time_beta_alpha,
                     time_beta_beta=args.time_beta_beta,
