@@ -37,6 +37,8 @@ def load_config_defaults(config_path: Path) -> dict:
         "num_per_class",
         "cfg_scale",
         "timesteps",
+        "schedule_type",
+        "prediction_type",
         "sampler",
         "ddim_steps",
         "ddim_eta",
@@ -59,6 +61,8 @@ def parse_args():
     parser.add_argument("--num_per_class", type=int, default=8)
     parser.add_argument("--cfg_scale", type=float, default=2.0)
     parser.add_argument("--timesteps", type=int, default=None)
+    parser.add_argument("--schedule_type", type=str, default=None, choices=["linear", "cosine"])
+    parser.add_argument("--prediction_type", type=str, default=None, choices=["epsilon", "v_prediction"])
     parser.add_argument("--sampler", type=str, default="ddim", choices=["ddpm", "ddim"])
     parser.add_argument("--ddim_steps", type=int, default=100)
     parser.add_argument("--ddim_eta", type=float, default=0.0)
@@ -105,13 +109,25 @@ def build_labels(args, device: torch.device) -> torch.Tensor:
 def main():
     args = parse_args()
     device = torch.device(args.device if args.device != "cuda" or torch.cuda.is_available() else "cpu")
-    write_json(args.config_out, vars(args))
     model, ckpt_args = load_model(Path(args.ckpt), device, use_ema=args.use_ema)
     timesteps = args.timesteps or ckpt_args.get("timesteps", 1000)
+    schedule_type = args.schedule_type or ckpt_args.get("schedule_type", "linear")
+    prediction_type = args.prediction_type or ckpt_args.get("prediction_type", "epsilon")
+    config_record = vars(args).copy()
+    config_record.update(
+        {
+            "resolved_timesteps": timesteps,
+            "resolved_schedule_type": schedule_type,
+            "resolved_prediction_type": prediction_type,
+        }
+    )
+    write_json(args.config_out, config_record)
     schedule = DDPMSchedule(
         timesteps=timesteps,
         beta_start=ckpt_args.get("beta_start", 1e-4),
         beta_end=ckpt_args.get("beta_end", 2e-2),
+        schedule_type=schedule_type,
+        cosine_s=ckpt_args.get("cosine_s", 0.008),
         device=device,
     )
     labels = build_labels(args, device)
@@ -123,6 +139,7 @@ def main():
             schedule=schedule,
             cfg_scale=args.cfg_scale,
             null_label=ckpt_args.get("null_label", 10),
+            prediction_type=prediction_type,
             device=device,
         )
     else:
@@ -133,6 +150,7 @@ def main():
             schedule=schedule,
             cfg_scale=args.cfg_scale,
             null_label=ckpt_args.get("null_label", 10),
+            prediction_type=prediction_type,
             num_steps=args.ddim_steps,
             eta=args.ddim_eta,
             clip_x0=args.clip_x0,

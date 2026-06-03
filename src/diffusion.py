@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import math
 
 import torch
 import torch.nn.functional as F
@@ -25,20 +26,34 @@ class DDPMSchedule:
     timesteps: int = 100
     beta_start: float = 1e-4
     beta_end: float = 2e-2
+    schedule_type: str = "linear"
+    cosine_s: float = 0.008
     device: str | torch.device = "cpu"
 
     def __post_init__(self) -> None:
         if self.timesteps <= 0:
             raise ValueError("timesteps must be positive.")
-        if not 0.0 < self.beta_start < self.beta_end < 1.0:
-            raise ValueError("expected 0 < beta_start < beta_end < 1.")
-
-        self.betas = torch.linspace(
-            self.beta_start,
-            self.beta_end,
-            self.timesteps,
-            device=self.device,
-        )
+        if self.schedule_type == "linear":
+            if not 0.0 < self.beta_start < self.beta_end < 1.0:
+                raise ValueError("expected 0 < beta_start < beta_end < 1.")
+            self.betas = torch.linspace(
+                self.beta_start,
+                self.beta_end,
+                self.timesteps,
+                device=self.device,
+            )
+        elif self.schedule_type == "cosine":
+            steps = torch.linspace(0, self.timesteps, self.timesteps + 1, device=self.device)
+            alpha_bars = torch.cos(
+                ((steps / self.timesteps + self.cosine_s) / (1.0 + self.cosine_s))
+                * math.pi
+                * 0.5
+            ) ** 2
+            alpha_bars = alpha_bars / alpha_bars[0]
+            self.betas = 1.0 - alpha_bars[1:] / alpha_bars[:-1]
+            self.betas = self.betas.clamp(min=1e-8, max=0.999)
+        else:
+            raise ValueError(f"unknown schedule_type: {self.schedule_type}")
         self.alphas = 1.0 - self.betas
         self.alpha_bars = torch.cumprod(self.alphas, dim=0)
 
@@ -60,6 +75,47 @@ class DDPMSchedule:
         ]:
             setattr(self, name, getattr(self, name).to(device))
         return self
+
+
+def ddpm_prediction_target(
+    x0: torch.Tensor,
+    noise: torch.Tensor,
+    t: torch.Tensor,
+    schedule: DDPMSchedule,
+    prediction_type: str,
+) -> torch.Tensor:
+    """
+    Build the supervised target for DDPM-style training.
+
+    epsilon: predict Gaussian noise directly.
+    v_prediction: predict v = sqrt(alpha_bar) eps - sqrt(1-alpha_bar) x0.
+    """
+    if prediction_type == "epsilon":
+        return noise
+    if prediction_type == "v_prediction":
+        sqrt_alpha_bar_t = _extract(schedule.sqrt_alpha_bars, t, x0.shape)
+        sqrt_one_minus_alpha_bar_t = _extract(schedule.sqrt_one_minus_alpha_bars, t, x0.shape)
+        return sqrt_alpha_bar_t * noise - sqrt_one_minus_alpha_bar_t * x0
+    raise ValueError(f"unknown prediction_type: {prediction_type}")
+
+
+def model_output_to_epsilon(
+    model_output: torch.Tensor,
+    xt: torch.Tensor,
+    t: torch.Tensor,
+    schedule: DDPMSchedule,
+    prediction_type: str,
+) -> torch.Tensor:
+    """
+    Convert a model output to epsilon so samplers can share one reverse formula.
+    """
+    if prediction_type == "epsilon":
+        return model_output
+    if prediction_type == "v_prediction":
+        sqrt_alpha_bar_t = _extract(schedule.sqrt_alpha_bars, t, xt.shape)
+        sqrt_one_minus_alpha_bar_t = _extract(schedule.sqrt_one_minus_alpha_bars, t, xt.shape)
+        return sqrt_alpha_bar_t * model_output + sqrt_one_minus_alpha_bar_t * xt
+    raise ValueError(f"unknown prediction_type: {prediction_type}")
 
 
 def q_sample(
@@ -84,6 +140,7 @@ def ddpm_loss(
     model,
     x0: torch.Tensor,
     schedule: DDPMSchedule,
+    prediction_type: str = "epsilon",
 ) -> torch.Tensor:
     """
     DDPM noise prediction loss:
@@ -95,8 +152,15 @@ def ddpm_loss(
     xt = q_sample(x0=x0, t=t, noise=noise, schedule=schedule)
 
     t_model = t.float()[:, None] / max(schedule.timesteps - 1, 1)
-    pred_noise = model(xt, t_model)
-    return F.mse_loss(pred_noise, noise)
+    pred = model(xt, t_model)
+    target = ddpm_prediction_target(
+        x0=x0,
+        noise=noise,
+        t=t,
+        schedule=schedule,
+        prediction_type=prediction_type,
+    )
+    return F.mse_loss(pred, target)
 
 
 def ddpm_conditional_loss(
@@ -106,6 +170,7 @@ def ddpm_conditional_loss(
     schedule: DDPMSchedule,
     null_label: int,
     drop_label_prob: float = 0.1,
+    prediction_type: str = "epsilon",
 ) -> torch.Tensor:
     """
     DDPM noise prediction loss for class-conditional models trained with CFG.
@@ -122,8 +187,15 @@ def ddpm_conditional_loss(
     drop_mask = torch.rand(batch_size, device=x0.device) < drop_label_prob
     y_train[drop_mask] = null_label
 
-    pred_noise = model(xt, t, y_train)
-    return F.mse_loss(pred_noise, noise)
+    pred = model(xt, t, y_train)
+    target = ddpm_prediction_target(
+        x0=x0,
+        noise=noise,
+        t=t,
+        schedule=schedule,
+        prediction_type=prediction_type,
+    )
+    return F.mse_loss(pred, target)
 
 
 @torch.no_grad()

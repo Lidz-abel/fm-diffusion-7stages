@@ -1,6 +1,6 @@
 import torch
 
-from .diffusion import DDPMSchedule, _extract
+from .diffusion import DDPMSchedule, _extract, model_output_to_epsilon
 
 
 @torch.no_grad()
@@ -11,6 +11,8 @@ def predict_eps_with_cfg(
     y: torch.Tensor,
     cfg_scale: float,
     null_label: int,
+    schedule: DDPMSchedule | None = None,
+    prediction_type: str = "epsilon",
 ) -> torch.Tensor:
     """
     Classifier-free guidance:
@@ -22,9 +24,20 @@ def predict_eps_with_cfg(
         y = y.expand(xt.shape[0])
 
     y_null = torch.full_like(y, null_label)
-    eps_cond = model(xt, t, y)
-    eps_uncond = model(xt, t, y_null)
-    return eps_uncond + cfg_scale * (eps_cond - eps_uncond)
+    pred_cond = model(xt, t, y)
+    pred_uncond = model(xt, t, y_null)
+    pred = pred_uncond + cfg_scale * (pred_cond - pred_uncond)
+    if prediction_type == "epsilon":
+        return pred
+    if schedule is None:
+        raise ValueError("schedule is required when prediction_type is not epsilon.")
+    return model_output_to_epsilon(
+        model_output=pred,
+        xt=xt,
+        t=t,
+        schedule=schedule,
+        prediction_type=prediction_type,
+    )
 
 
 @torch.no_grad()
@@ -36,6 +49,7 @@ def p_sample_step_cfg(
     schedule: DDPMSchedule,
     cfg_scale: float,
     null_label: int,
+    prediction_type: str = "epsilon",
 ) -> torch.Tensor:
     """
     One DDPM reverse step using classifier-free guidance.
@@ -54,6 +68,8 @@ def p_sample_step_cfg(
         y=y,
         cfg_scale=cfg_scale,
         null_label=null_label,
+        schedule=schedule,
+        prediction_type=prediction_type,
     )
 
     sqrt_recip_alpha_t = _extract(schedule.sqrt_recip_alphas, t, xt.shape)
@@ -78,6 +94,7 @@ def sample_ddpm_cfg(
     schedule: DDPMSchedule,
     cfg_scale: float,
     null_label: int,
+    prediction_type: str = "epsilon",
     device: str | torch.device = "cpu",
 ) -> torch.Tensor:
     """
@@ -98,6 +115,7 @@ def sample_ddpm_cfg(
             schedule=schedule,
             cfg_scale=cfg_scale,
             null_label=null_label,
+            prediction_type=prediction_type,
         )
     return x
 
@@ -110,6 +128,7 @@ def sample_ddim_cfg(
     schedule: DDPMSchedule,
     cfg_scale: float,
     null_label: int,
+    prediction_type: str = "epsilon",
     num_steps: int = 100,
     eta: float = 0.0,
     clip_x0: bool = True,
@@ -149,6 +168,8 @@ def sample_ddim_cfg(
             y=y,
             cfg_scale=cfg_scale,
             null_label=null_label,
+            schedule=schedule,
+            prediction_type=prediction_type,
         )
 
         alpha_bar_t = schedule.alpha_bars[step].reshape(1, 1, 1, 1)

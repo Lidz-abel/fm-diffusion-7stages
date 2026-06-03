@@ -43,6 +43,9 @@ def load_config_defaults(config_path: Path) -> dict:
         "timesteps",
         "beta_start",
         "beta_end",
+        "schedule_type",
+        "cosine_s",
+        "prediction_type",
         "drop_label_prob",
         "epochs",
         "batch_size",
@@ -81,6 +84,9 @@ def parse_args():
     parser.add_argument("--timesteps", type=int, default=1000)
     parser.add_argument("--beta_start", type=float, default=1e-4)
     parser.add_argument("--beta_end", type=float, default=2e-2)
+    parser.add_argument("--schedule_type", type=str, default="linear", choices=["linear", "cosine"])
+    parser.add_argument("--cosine_s", type=float, default=0.008)
+    parser.add_argument("--prediction_type", type=str, default="epsilon", choices=["epsilon", "v_prediction"])
     parser.add_argument("--drop_label_prob", type=float, default=0.1)
     parser.add_argument("--lr", type=float, default=1.5e-4)
     parser.add_argument("--weight_decay", type=float, default=0.0)
@@ -159,6 +165,8 @@ def main():
         timesteps=args.timesteps,
         beta_start=args.beta_start,
         beta_end=args.beta_end,
+        schedule_type=args.schedule_type,
+        cosine_s=args.cosine_s,
         device=device,
     )
     model = CIFAR10FlowUNet(
@@ -180,6 +188,8 @@ def main():
     print(f"Device: {device}")
     print(f"Trainable parameters: {count_parameters(model):,}")
     print(f"DDPM timesteps: {args.timesteps}")
+    print(f"Schedule type: {args.schedule_type}")
+    print(f"Prediction type: {args.prediction_type}")
     print(f"EMA: {'enabled' if ema is not None else 'disabled'}")
     print(f"AMP: {'enabled' if scaler.is_enabled() else 'disabled'}")
 
@@ -202,6 +212,7 @@ def main():
                     schedule=schedule,
                     null_label=args.null_label,
                     drop_label_prob=args.drop_label_prob,
+                    prediction_type=args.prediction_type,
                 )
                 scaled_loss = loss / max(args.gradient_accumulation_steps, 1)
 
