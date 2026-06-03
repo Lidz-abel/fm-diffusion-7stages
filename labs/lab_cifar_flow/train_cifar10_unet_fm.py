@@ -39,6 +39,11 @@ def parse_args():
     parser.add_argument("--num_classes", type=int, default=10)
     parser.add_argument("--null_label", type=int, default=10)
     parser.add_argument("--drop_label_prob", type=float, default=0.1)
+    parser.add_argument("--time_sampling", type=str, default="uniform", choices=["uniform", "beta"])
+    parser.add_argument("--time_beta_alpha", type=float, default=1.0)
+    parser.add_argument("--time_beta_beta", type=float, default=1.0)
+    parser.add_argument("--loss_weighting", type=str, default="none", choices=["none", "data_end", "middle"])
+    parser.add_argument("--loss_weight_lambda", type=float, default=1.0)
     parser.add_argument("--use_attention", action="store_true")
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--data_dir", type=str, default=str(ROOT / "data"))
@@ -77,6 +82,11 @@ def load_config_defaults(config_path: Path) -> dict:
         "num_classes": "num_classes",
         "null_label": "null_label",
         "drop_label_prob": "drop_label_prob",
+        "time_sampling": "time_sampling",
+        "time_beta_alpha": "time_beta_alpha",
+        "time_beta_beta": "time_beta_beta",
+        "loss_weighting": "loss_weighting",
+        "loss_weight_lambda": "loss_weight_lambda",
         "epochs": "epochs",
         "batch_size": "batch_size",
         "lr": "lr",
@@ -210,6 +220,11 @@ def main():
                     y=labels,
                     null_label=args.null_label,
                     drop_label_prob=args.drop_label_prob,
+                    time_sampling=args.time_sampling,
+                    time_beta_alpha=args.time_beta_alpha,
+                    time_beta_beta=args.time_beta_beta,
+                    loss_weighting=args.loss_weighting,
+                    loss_weight_lambda=args.loss_weight_lambda,
                 )
                 scaled_loss = loss / max(args.gradient_accumulation_steps, 1)
 

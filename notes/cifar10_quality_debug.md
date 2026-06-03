@@ -115,3 +115,25 @@ If U-Net v2 with attention, EMA, 300 epochs, Heun NFE 100, and CFG scale 1 or 2 
 - compare with DDPM or EDM-style noise prediction;
 - test non-uniform time sampling or loss weighting;
 - consider reflow only after the base model produces usable structures.
+
+## 7. Time Sampling and Loss Weighting
+
+The training code supports:
+
+```bash
+--time_sampling uniform
+--time_sampling beta --time_beta_alpha 3.0 --time_beta_beta 1.0
+--loss_weighting none
+--loss_weighting data_end --loss_weight_lambda 1.0
+--loss_weighting middle --loss_weight_lambda 1.0
+```
+
+The first direct 300-epoch quality experiment uses:
+
+```text
+time_sampling = beta(3, 1)
+loss_weighting = data_end
+loss_weight_lambda = 1.0
+```
+
+This biases training toward later times near the data endpoint, where image structure and detail matter most for visual quality.
