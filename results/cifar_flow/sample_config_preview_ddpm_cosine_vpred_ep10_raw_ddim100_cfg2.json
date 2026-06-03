@@ -1,0 +1,23 @@
+{
+  "all_classes": true,
+  "cfg_scale": 2.0,
+  "ckpt": "checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt",
+  "class_id": 3,
+  "clip_x0": true,
+  "config": null,
+  "config_out": "results/cifar_flow/sample_config_preview_ddpm_cosine_vpred_ep10_raw_ddim100_cfg2.json",
+  "ddim_eta": 0.0,
+  "ddim_steps": 100,
+  "device": "cuda",
+  "num_per_class": 8,
+  "num_samples": 64,
+  "prediction_type": null,
+  "resolved_prediction_type": "v_prediction",
+  "resolved_schedule_type": "cosine",
+  "resolved_timesteps": 1000,
+  "sampler": "ddim",
+  "save_path": "figures/cifar_flow/preview_ddpm_cosine_vpred_ep10_raw_ddim100_cfg2.png",
+  "schedule_type": null,
+  "timesteps": null,
+  "use_ema": false
+}
