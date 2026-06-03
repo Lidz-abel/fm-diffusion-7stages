@@ -12,11 +12,13 @@ sys.path.append(str(ROOT))
 from src.toy_data import sample_gaussian_mixture, sample_standard_normal
 from src.mlp import FlowMLP
 from src.flow_matching import flow_matching_loss
-from src.samplers import sample_ode_euler, sample_ode_euler_trajectory
+from src.samplers import sample_ode_euler, sample_ode_euler_trajectory, sample_ode_heun
 from src.visualization import (
     plot_points,
     plot_trajectories,
     plot_nfe_samples,
+    plot_loss_curve,
+    plot_sample_panels,
     plot_vector_field,
 )
 
@@ -31,12 +33,15 @@ def parse_args():
     parser.add_argument("--num_layers", type=int, default=4)
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--save_every", type=int, default=1000)
+    parser.add_argument("--eval_samples", type=int, default=5000)
+    parser.add_argument("--seed", type=int, default=0)
 
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+    torch.manual_seed(args.seed)
 
     device = torch.device(args.device)
     figures_dir = ROOT / "figures" / "stage2"
@@ -90,8 +95,14 @@ def main():
         ckpt_dir / "stage2_flow_matching.pt",
     )
 
+    plot_loss_curve(
+        loss_history,
+        save_path=str(figures_dir / "fm_training_loss.png"),
+        smooth_window=min(100, max(1, len(loss_history) // 10)),
+    )
+
     # 1. Plot real data
-    real_data = sample_gaussian_mixture(5000, device=device)
+    real_data = sample_gaussian_mixture(args.eval_samples, device=device)
     plot_points(
         real_data,
         title="Target data distribution",
@@ -99,9 +110,9 @@ def main():
     )
 
     # 2. Plot initial Gaussian noise
-    noise = sample_standard_normal(5000, dim=2, device=device)
+    x0_fixed = sample_standard_normal(args.eval_samples, dim=2, device=device)
     plot_points(
-        noise,
+        x0_fixed,
         title="Initial Gaussian noise",
         save_path=str(figures_dir / "initial_noise.png"),
     )
@@ -111,8 +122,7 @@ def main():
     samples_by_nfe = {}
 
     for nfe in [5, 10, 20, 50, 100]:
-        x0 = sample_standard_normal(5000, dim=2, device=device)
-        samples = sample_ode_euler(model, x0, n_steps=nfe)
+        samples = sample_ode_euler(model, x0_fixed, n_steps=nfe)
         samples_by_nfe[nfe] = samples
 
         plot_points(
@@ -126,7 +136,19 @@ def main():
         save_path=str(figures_dir / "fm_samples_nfe_compare.png"),
     )
 
-    # 4. Trajectory visualization
+    # 4. Euler vs Heun comparison from the same initial noise.
+    euler_samples = sample_ode_euler(model, x0_fixed, n_steps=10)
+    heun_samples = sample_ode_heun(model, x0_fixed, n_steps=10)
+    plot_sample_panels(
+        {
+            "Euler, steps=10": euler_samples,
+            "Heun, steps=10": heun_samples,
+            "Euler, steps=100": samples_by_nfe[100],
+        },
+        save_path=str(figures_dir / "fm_euler_vs_heun.png"),
+    )
+
+    # 5. Trajectory visualization
     x0_traj = sample_standard_normal(100, dim=2, device=device)
     traj = sample_ode_euler_trajectory(model, x0_traj, n_steps=100)
 
@@ -137,7 +159,7 @@ def main():
         max_paths=80,
     )
 
-    # 5. Vector field visualization
+    # 6. Vector field visualization
     for t_value in [0.0, 0.25, 0.5, 0.75]:
         plot_vector_field(
             model,
@@ -148,6 +170,7 @@ def main():
 
     print(f"Saved figures to: {figures_dir}")
     print(f"Saved checkpoint to: {ckpt_dir / 'stage2_flow_matching.pt'}")
+    print(f"Final loss: {loss_history[-1]:.6f}")
 
 
 if __name__ == "__main__":

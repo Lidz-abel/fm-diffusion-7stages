@@ -28,6 +28,48 @@ def constant_sigma(t: torch.Tensor) -> float:
     return 0.5
 
 
+def run_sanity_checks(figures_dir: Path, device: str) -> None:
+    """
+    Check two analytic facts used in this lab:
+      1. Var[W_t] = t for Brownian motion.
+      2. dX = -X dt has solution X_t = exp(-t) X_0.
+    """
+    check_steps = 200
+    brownian_paths = simulate_brownian_motion(
+        n_paths=20000,
+        n_steps=check_steps,
+        dim=1,
+        device=device,
+    )
+
+    times = torch.tensor([0.25, 0.50, 0.75, 1.00], device=brownian_paths.device)
+    indices = (times * check_steps).long()
+    empirical_vars = brownian_paths[:, indices, 0].var(dim=0, unbiased=True)
+
+    x0 = torch.randn(2048, 2, device=device) * 3.0
+    ode_traj = euler_solver(
+        x0=x0,
+        vector_field=linear_drift_to_origin,
+        n_steps=check_steps,
+    )
+    t_grid = torch.linspace(0.0, 1.0, check_steps + 1, device=x0.device)
+    exact = torch.exp(-t_grid).view(-1, 1, 1) * x0.view(1, *x0.shape)
+    abs_error = (ode_traj - exact).abs()
+
+    lines = ["Stage 1 sanity checks"]
+    lines.append("Brownian motion variance check: Var[W_t] should be close to t.")
+    for t_value, empirical_var in zip(times.tolist(), empirical_vars.tolist()):
+        lines.append(f"  t={t_value:.2f}: empirical_var={empirical_var:.6f}, target={t_value:.6f}")
+
+    lines.append("ODE check for dX=-X dt: Euler solution should approximate exp(-t) X0.")
+    lines.append(f"  max_abs_error={abs_error.max().item():.6f}")
+    lines.append(f"  mean_abs_error={abs_error.mean().item():.6f}")
+
+    report = "\n".join(lines)
+    (figures_dir / "stage1_sanity_checks.txt").write_text(report + "\n", encoding="utf-8")
+    print(report)
+
+
 def main() -> None:
     device = "cpu"
     batch = 100
@@ -35,6 +77,8 @@ def main() -> None:
 
     figures_dir = ROOT / "figures" / "stage1"
     figures_dir.mkdir(parents=True, exist_ok=True)
+
+    run_sanity_checks(figures_dir, device=device)
 
     # Brownian motion
     brownian_paths = simulate_brownian_motion(

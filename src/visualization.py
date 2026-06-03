@@ -126,6 +126,44 @@ def plot_nfe_samples(
     plt.close()
 
 
+def plot_loss_curve(
+    losses: list[float],
+    save_path: str,
+    title: str = "Flow Matching training loss",
+    smooth_window: int = 100,
+) -> None:
+    """
+    Plot raw training loss and an optional moving average.
+    """
+    if len(losses) == 0:
+        raise ValueError("losses must be non-empty.")
+
+    steps = list(range(1, len(losses) + 1))
+
+    plt.figure(figsize=(7, 4))
+    plt.plot(steps, losses, linewidth=0.7, alpha=0.35, label="loss")
+
+    if smooth_window > 1 and len(losses) >= smooth_window:
+        kernel = torch.ones(smooth_window) / smooth_window
+        loss_tensor = torch.tensor(losses, dtype=torch.float32)
+        smooth = torch.nn.functional.conv1d(
+            loss_tensor.view(1, 1, -1),
+            kernel.view(1, 1, -1),
+        ).view(-1)
+        smooth_steps = steps[smooth_window - 1 :]
+        plt.plot(smooth_steps, smooth.numpy(), linewidth=1.5, label=f"MA({smooth_window})")
+
+    plt.xlabel("training step")
+    plt.ylabel("MSE")
+    plt.title(title)
+    plt.grid(alpha=0.2)
+    plt.legend()
+
+    Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+    plt.savefig(save_path, dpi=200, bbox_inches="tight")
+    plt.close()
+
+
 @torch.no_grad()
 def plot_vector_field(
     model,

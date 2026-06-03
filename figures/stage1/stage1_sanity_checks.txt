@@ -1,0 +1,9 @@
+Stage 1 sanity checks
+Brownian motion variance check: Var[W_t] should be close to t.
+  t=0.25: empirical_var=0.251564, target=0.250000
+  t=0.50: empirical_var=0.499597, target=0.500000
+  t=0.75: empirical_var=0.753589, target=0.750000
+  t=1.00: empirical_var=1.011179, target=1.000000
+ODE check for dX=-X dt: Euler solution should approximate exp(-t) X0.
+  max_abs_error=0.010199
+  mean_abs_error=0.001599
