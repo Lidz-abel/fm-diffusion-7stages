@@ -67,6 +67,7 @@ class CIFAR10FlowUNet(nn.Module):
         num_classes: int = 10,
         null_label: int = 10,
         use_attention: bool = False,
+        time_scale: float = 1000.0,
     ):
         super().__init__()
         if null_label < num_classes:
@@ -78,6 +79,7 @@ class CIFAR10FlowUNet(nn.Module):
         self.num_classes = num_classes
         self.null_label = null_label
         self.use_attention = use_attention
+        self.time_scale = time_scale
 
         self.time_embedding = SinusoidalTimeEmbedding(emb_dim)
         self.class_embedding = nn.Embedding(null_label + 1, emb_dim)
@@ -121,7 +123,7 @@ class CIFAR10FlowUNet(nn.Module):
         if y.ndim != 1:
             y = y.reshape(-1)
         y = y.clamp(min=0, max=self.null_label)
-        return self.time_embedding(t * 1000.0) + self.class_embedding(y)
+        return self.time_embedding(t * self.time_scale) + self.class_embedding(y)
 
     def forward(self, x: torch.Tensor, t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         emb = self._conditioning(t, y)

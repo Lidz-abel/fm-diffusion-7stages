@@ -1,0 +1,47 @@
+project:
+  name: cifar10_unet_ddpm_strong
+  seed: 42
+
+model:
+  type: ddpm_unet_large
+  in_channels: 3
+  base_channels: 192
+  attention_resolutions: [16, 8]
+  time_dim: 512
+  num_classes: 10
+  null_label: 10
+  use_attention: true
+  time_scale: 1.0
+
+diffusion:
+  timesteps: 1000
+  beta_start: 0.0001
+  beta_end: 0.02
+  drop_label_prob: 0.1
+
+train:
+  epochs: 500
+  batch_size: 96
+  gradient_accumulation_steps: 2
+  lr: 0.00015
+  weight_decay: 0.0
+  grad_clip: 1.0
+  use_amp: true
+  use_ema: true
+  ema_decay: 0.9999
+  warmup_steps: 5000
+  scheduler: cosine
+  device: cuda
+  num_workers: 8
+  save_every: 10000
+
+sample:
+  cfg_scale: 2.0
+  use_ema: true
+  num_per_class: 8
+
+paths:
+  save_path: checkpoints/cifar10_unet_ddpm_strong_500ep.pt
+  log_path: results/cifar_flow/training_log_ddpm_strong_500ep.csv
+  config_path: results/cifar_flow/config_used_ddpm_strong_500ep.json
+  curve_path: figures/cifar_flow/training_curve_ddpm_strong_500ep.png
