@@ -1,0 +1,8 @@
+x1_min: -1.000000
+x1_max: 1.000000
+x0_mean: 0.002308
+x0_std: 0.997023
+target_v_mean: -0.043097
+target_v_std: 1.087205
+target_v_min: -4.481009
+target_v_max: 4.910840

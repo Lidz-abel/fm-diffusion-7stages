@@ -30,3 +30,29 @@ python labs/lab_cifar_flow/eval_solver_ablation.py --ckpt checkpoints/cifar10_un
 python labs/lab_cifar_flow/eval_guidance_ablation.py --ckpt checkpoints/cifar10_unet_fm.pt --solver heun --nfe 50 --cfg_scales 0 1 2 4 --num_per_class 8 --device cuda
 python labs/lab_cifar_flow/benchmark_sampling.py --ckpt checkpoints/cifar10_unet_fm.pt --solvers euler heun --nfe_list 5 10 20 50 100 --device cuda
 ```
+
+## Phase 3: Quality Upgrade
+
+Debug the data path:
+
+```bash
+python labs/lab_cifar_flow/debug_flow_tuple.py --device cuda --save_dir figures/cifar_flow/debug
+```
+
+Run an Attention U-Net + EMA smoke test:
+
+```bash
+python labs/lab_cifar_flow/train_cifar10_unet_fm.py --config configs/cifar10_unet_fm_v2.yaml --epochs 1 --max_steps 5 --batch_size 8 --base_channels 32 --time_dim 128 --device cuda
+```
+
+Sample the EMA model with a high-quality setting:
+
+```bash
+python labs/lab_cifar_flow/sample_cifar10_fm.py --ckpt checkpoints/cifar10_unet_fm_v2.pt --use_ema --solver heun --nfe 100 --all_classes --num_per_class 8 --device cuda
+```
+
+Compare raw and EMA weights:
+
+```bash
+python labs/lab_cifar_flow/compare_ema_raw.py --ckpt checkpoints/cifar10_unet_fm_v2.pt --device cuda
+```

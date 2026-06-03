@@ -1,0 +1,59 @@
+project:
+  name: cifar10_unet_rectified_flow_v2
+  seed: 42
+
+data:
+  dataset: cifar10
+  image_size: 32
+  in_channels: 3
+  num_classes: 10
+  data_dir: data
+
+model:
+  type: unet_v2
+  in_channels: 3
+  base_channels: 128
+  channel_mults: [1, 2, 2, 4]
+  num_res_blocks: 2
+  attention_resolutions: [16, 8]
+  time_dim: 512
+  dropout: 0.1
+  num_classes: 10
+  null_label: 10
+  use_attention: true
+
+flow:
+  path_type: rectified
+  t_min: 0.0
+  t_max: 1.0
+  drop_label_prob: 0.1
+
+train:
+  epochs: 300
+  batch_size: 128
+  gradient_accumulation_steps: 2
+  lr: 0.0002
+  optimizer: adamw
+  weight_decay: 0.0
+  grad_clip: 1.0
+  use_amp: true
+  use_ema: true
+  ema_decay: 0.9999
+  warmup_steps: 5000
+  scheduler: cosine
+  device: cuda
+  num_workers: 8
+  save_every: 10000
+
+sample:
+  solver: heun
+  nfe: 100
+  cfg_scale: 1.0
+  use_ema: true
+  num_per_class: 8
+
+paths:
+  save_path: checkpoints/cifar10_unet_fm_v2.pt
+  log_path: results/cifar_flow/training_log_v2.csv
+  config_path: results/cifar_flow/config_used_v2.json
+  curve_path: figures/cifar_flow/first_stage_training_curve_v2.png

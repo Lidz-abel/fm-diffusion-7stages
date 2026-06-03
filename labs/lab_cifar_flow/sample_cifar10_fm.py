@@ -23,6 +23,7 @@ def parse_args():
     parser.add_argument("--solver", type=str, default="euler", choices=["euler", "heun"])
     parser.add_argument("--nfe", type=int, default=50)
     parser.add_argument("--cfg_scale", type=float, default=1.0)
+    parser.add_argument("--use_ema", action="store_true")
     parser.add_argument("--num_samples", type=int, default=64)
     parser.add_argument("--num_per_class", type=int, default=8)
     parser.add_argument("--device", type=str, default="cuda")
@@ -30,7 +31,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def load_unet(ckpt_path: Path, device: torch.device):
+def load_unet(ckpt_path: Path, device: torch.device, use_ema: bool = False):
     checkpoint = torch.load(ckpt_path, map_location=device)
     ckpt_args = checkpoint.get("args", {})
     model = CIFAR10FlowUNet(
@@ -41,7 +42,10 @@ def load_unet(ckpt_path: Path, device: torch.device):
         null_label=ckpt_args.get("null_label", 10),
         use_attention=ckpt_args.get("use_attention", False),
     ).to(device)
-    model.load_state_dict(checkpoint["model"])
+    if use_ema and checkpoint.get("ema") is not None:
+        model.load_state_dict(checkpoint["ema"]["model"])
+    else:
+        model.load_state_dict(checkpoint["model"])
     model.eval()
     return model, ckpt_args
 
@@ -58,7 +62,7 @@ def build_labels(args, device: torch.device) -> torch.Tensor:
 def main():
     args = parse_args()
     device = torch.device(args.device if args.device != "cuda" or torch.cuda.is_available() else "cpu")
-    model, ckpt_args = load_unet(Path(args.ckpt), device)
+    model, ckpt_args = load_unet(Path(args.ckpt), device, use_ema=args.use_ema)
     labels = build_labels(args, device)
     samples = sample_flow(
         model=model,

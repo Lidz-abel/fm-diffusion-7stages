@@ -3,5 +3,6 @@ matplotlib
 torch
 torchvision
 tqdm
+PyYAML
 ipykernel
 jupyter
