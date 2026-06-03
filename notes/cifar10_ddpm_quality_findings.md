@@ -60,3 +60,30 @@ The cosine v-prediction branch is younger, around epoch 10 in this preview. It a
 2. Generate raw and EMA previews at the same checkpoint age.
 3. Run FID and Inception Score with `configs/cifar10_metrics_ddpm_*.yaml`.
 4. Use the best visual branch for README samples and the best metric branch for the results table.
+
+## Epoch 40 Linear DDPM Update
+
+Updated preview files:
+
+```text
+figures/cifar_flow/showcase_ddpm_linear_ep40_raw_ddim250_cfg2.png
+figures/cifar_flow/showcase_ddpm_linear_ep40_ema_ddim250_cfg2.png
+figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg1.0.png
+figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg1.5.png
+figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg2.5.png
+figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg3.0.png
+```
+
+Findings:
+
+- Raw weights remain much better than EMA at this point.
+- EMA still produces color-texture patterns instead of coherent CIFAR-10 objects.
+- `cfg_scale=2.5` is the best balanced visual setting so far.
+- `cfg_scale=3.0` strengthens class identity for airplane/automobile/ship/truck, but introduces more guidance artifacts.
+- Current recommended showcase candidate:
+
+```text
+figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg2.5.png
+```
+
+This is now the first sample grid that is clearly suitable for an intermediate README progress section.
