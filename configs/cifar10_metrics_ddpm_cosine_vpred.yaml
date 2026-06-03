@@ -1,0 +1,32 @@
+experiment:
+  name: cifar10_metrics_ddpm_cosine_vpred
+  seed: 43
+
+model:
+  ckpt: checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt
+  use_ema: true
+
+sample:
+  sampler: ddim
+  timesteps: 1000
+  schedule_type: cosine
+  prediction_type: v_prediction
+  ddim_steps: 250
+  ddim_eta: 0.0
+  clip_x0: true
+  cfg_scale: 2.0
+
+metrics:
+  num_samples: 5000
+  batch_size: 64
+  real_batch_size: 128
+  real_split: train
+  pretrained_inception: true
+  inception_splits: 10
+  device: cuda
+  num_workers: 4
+
+output:
+  save_grid: figures/cifar_flow/metrics_ddpm_cosine_vpred_preview.png
+  json_path: results/cifar_flow/metrics_ddpm_cosine_vpred.json
+  csv_path: results/cifar_flow/metrics_ddpm.csv

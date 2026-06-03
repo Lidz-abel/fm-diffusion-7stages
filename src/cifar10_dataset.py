@@ -24,12 +24,19 @@ def get_cifar10_dataloader(
     root: str | Path = "data",
     num_workers: int = 4,
     download: bool = True,
+    augment: bool | None = None,
+    shuffle: bool | None = None,
 ) -> DataLoader:
     """
     CIFAR-10 dataloader with images scaled to [-1, 1].
     """
+    if augment is None:
+        augment = train
+    if shuffle is None:
+        shuffle = train
+
     transform_list = []
-    if train:
+    if augment:
         transform_list.append(transforms.RandomHorizontalFlip())
 
     transform_list.extend(
@@ -49,7 +56,7 @@ def get_cifar10_dataloader(
     return DataLoader(
         dataset,
         batch_size=batch_size,
-        shuffle=train,
+        shuffle=shuffle,
         num_workers=num_workers,
         pin_memory=True,
         drop_last=train,
