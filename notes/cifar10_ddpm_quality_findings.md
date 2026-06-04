@@ -87,3 +87,34 @@ figures/cifar_flow/cfgscan_ddpm_linear_ep40_raw_ddim250_cfg2.5.png
 ```
 
 This is now the first sample grid that is clearly suitable for an intermediate README progress section.
+
+## 500 Epoch Final Candidate Update
+
+Final candidate files:
+
+```text
+figures/cifar_flow/final_candidate_linear_raw_500ep_ddim250_cfg2.5.png
+figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+```
+
+Findings:
+
+- Both branches are clearly better than the earlier Rectified Flow results.
+- The linear epsilon model gives strong class structure, especially for airplane, automobile, ship, truck, horse, and frog.
+- The cosine v-prediction model is the current best visual candidate. It has more natural-looking animals and stronger object separation while preserving clear vehicles and ships.
+- Current main showcase branch:
+
+```text
+checkpoint: checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt
+weights: raw
+sampler: DDIM
+DDIM steps: 250
+CFG scale: 2.5
+sample grid: figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+```
+
+The next required gate is the 5k-sample metric run:
+
+```text
+results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
+```
