@@ -63,6 +63,7 @@ def load_config_defaults(config_path: Path) -> dict:
         "log_path",
         "config_path",
         "curve_path",
+        "resume_path",
         "seed",
     }
     return {key: defaults[key] for key in keys if key in defaults}
@@ -100,6 +101,7 @@ def parse_args():
     parser.add_argument("--log_path", type=str, default=str(ROOT / "results" / "cifar_flow" / "training_log_edm.csv"))
     parser.add_argument("--config_path", type=str, default=str(ROOT / "results" / "cifar_flow" / "config_used_edm.json"))
     parser.add_argument("--curve_path", type=str, default=str(ROOT / "figures" / "cifar_flow" / "training_curve_edm.png"))
+    parser.add_argument("--resume_path", type=str, default=None)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max_steps", type=int, default=None)
     config_args, _ = parser.parse_known_args()
@@ -165,11 +167,24 @@ def main():
         use_attention=args.use_attention,
         time_scale=args.time_scale,
     ).to(device)
+    resume_checkpoint = None
+    resume_epoch = 0
+    resume_step = 0
+    resume_update_step = 0
+    if args.resume_path:
+        resume_checkpoint = torch.load(args.resume_path, map_location=device)
+        model.load_state_dict(resume_checkpoint["model"])
+        resume_epoch = int(resume_checkpoint.get("epoch", 0))
+        resume_step = int(resume_checkpoint.get("step", 0))
+        resume_update_step = int(resume_checkpoint.get("update_step", 0))
+
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     total_batches = len(dataloader) * args.epochs
     total_updates = max(total_batches // max(args.gradient_accumulation_steps, 1), 1)
     scheduler = build_scheduler(optimizer, args, total_updates)
     ema = EMA(model, decay=args.ema_decay) if args.use_ema else None
+    if ema is not None and resume_checkpoint is not None and resume_checkpoint.get("ema") is not None:
+        ema.load_state_dict(resume_checkpoint["ema"])
     scaler = torch.amp.GradScaler("cuda", enabled=args.use_amp and device.type == "cuda")
     loss_config = EDMLossConfig(sigma_data=args.sigma_data, p_mean=args.p_mean, p_std=args.p_std)
 
@@ -178,14 +193,19 @@ def main():
     print(f"EDM sigma_data={args.sigma_data}, p_mean={args.p_mean}, p_std={args.p_std}")
     print(f"EMA: {'enabled' if ema is not None else 'disabled'}")
     print(f"AMP: {'enabled' if scaler.is_enabled() else 'disabled'}")
+    if args.resume_path:
+        print(
+            "Resumed from "
+            f"{args.resume_path} at epoch={resume_epoch}, step={resume_step}, updates={resume_update_step}"
+        )
 
-    global_step = 0
-    update_step = 0
-    loss_history: list[float] = []
+    global_step = resume_step
+    update_step = resume_update_step
+    loss_history: list[float] = list(resume_checkpoint.get("loss", [])) if resume_checkpoint is not None else []
     model.train()
     optimizer.zero_grad(set_to_none=True)
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(resume_epoch + 1, args.epochs + 1):
         pbar = tqdm(dataloader, desc=f"Epoch {epoch}/{args.epochs}")
         for batch_idx, (images, labels) in enumerate(pbar, start=1):
             images = images.to(device)
