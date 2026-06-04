@@ -1,0 +1,22 @@
+{
+  "batch_size": 64,
+  "cfg_scale": 2.5,
+  "checkpoint": "checkpoints/cifar10_unet_ddpm_strong_500ep.pt",
+  "clip_x0": false,
+  "ddim_eta": 0.0,
+  "ddim_steps": 250,
+  "fid": 84.02464779628747,
+  "inception_score_mean": 3.282202959060669,
+  "inception_score_std": 0.17322033643722534,
+  "num_samples": 1000,
+  "prediction_type": "epsilon",
+  "pretrained_inception": true,
+  "real_split": "train",
+  "sampler": "ddim",
+  "schedule_type": "linear",
+  "seconds_per_sample": 0.5592452828884125,
+  "seconds_total": 559.2452828884125,
+  "seed": 42,
+  "timesteps": 1000,
+  "use_ema": false
+}
