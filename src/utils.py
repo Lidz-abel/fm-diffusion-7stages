@@ -9,10 +9,15 @@ def save_image_grid(
     save_path: str | Path,
     nrow: int = 8,
     value_range: tuple[float, float] = (-1.0, 1.0),
+    padding: int = 2,
+    upscale: int = 1,
 ) -> None:
     """
     Save a grid of image tensors.
     """
+    if upscale < 1:
+        raise ValueError("upscale must be >= 1.")
+
     save_path = Path(save_path)
     save_path.parent.mkdir(parents=True, exist_ok=True)
     grid = make_grid(
@@ -20,8 +25,20 @@ def save_image_grid(
         nrow=nrow,
         normalize=True,
         value_range=value_range,
+        padding=padding,
     )
-    save_image(grid, save_path)
+
+    if upscale == 1:
+        save_image(grid, save_path)
+        return
+
+    from PIL import Image
+    from torchvision.transforms.functional import to_pil_image
+
+    image = to_pil_image(grid.clamp(0.0, 1.0))
+    resampling = getattr(Image, "Resampling", Image).NEAREST
+    image = image.resize((image.width * upscale, image.height * upscale), resample=resampling)
+    image.save(save_path)
 
 
 def save_labeled_image_rows(

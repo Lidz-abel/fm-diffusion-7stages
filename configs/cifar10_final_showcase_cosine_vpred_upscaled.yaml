@@ -1,0 +1,22 @@
+model:
+  ckpt: checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt
+  use_ema: false
+
+sample:
+  all_classes: true
+  num_per_class: 8
+  cfg_scale: 2.5
+  timesteps: 1000
+  schedule_type: cosine
+  prediction_type: v_prediction
+  sampler: ddim
+  ddim_steps: 250
+  ddim_eta: 0.0
+  clip_x0: false
+  device: cuda
+  upscale: 4
+  padding: 2
+
+output:
+  save_path: figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5_upscaled.png
+  config_out: results/cifar_flow/sample_config_final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5_upscaled.json

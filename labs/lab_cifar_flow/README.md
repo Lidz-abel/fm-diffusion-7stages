@@ -127,6 +127,13 @@ python labs/lab_cifar_flow/sample_cifar10_ddpm.py \
   --config configs/cifar10_final_showcase_cosine_vpred.yaml
 ```
 
+Regenerate the README-friendly nearest-neighbor upscaled grid:
+
+```bash
+python labs/lab_cifar_flow/sample_cifar10_ddpm.py \
+  --config configs/cifar10_final_showcase_cosine_vpred_upscaled.yaml
+```
+
 Run the 5k-sample final metric evaluation:
 
 ```bash
@@ -138,6 +145,7 @@ Current output targets:
 
 ```text
 figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5_upscaled.png
 figures/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k_preview.png
 results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
 results/cifar_flow/metrics_ddpm_final.csv

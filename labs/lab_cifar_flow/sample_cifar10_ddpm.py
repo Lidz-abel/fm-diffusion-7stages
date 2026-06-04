@@ -47,6 +47,8 @@ def load_config_defaults(config_path: Path) -> dict:
         "device",
         "save_path",
         "config_out",
+        "upscale",
+        "padding",
     }
     return {key: defaults[key] for key in keys if key in defaults}
 
@@ -71,6 +73,8 @@ def parse_args():
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--save_path", type=str, default=str(ROOT / "figures" / "cifar_flow" / "final_ddpm_strong_cfg2.png"))
     parser.add_argument("--config_out", type=str, default=str(ROOT / "results" / "cifar_flow" / "sample_config_ddpm_strong.json"))
+    parser.add_argument("--upscale", type=int, default=1)
+    parser.add_argument("--padding", type=int, default=2)
     config_args, _ = parser.parse_known_args()
     if config_args.config is not None:
         parser.set_defaults(**load_config_defaults(Path(config_args.config)))
@@ -157,7 +161,13 @@ def main():
             device=device,
         )
     nrow = args.num_per_class if args.all_classes else max(1, int(math.sqrt(labels.shape[0])))
-    save_image_grid(samples.clamp(-1.0, 1.0), args.save_path, nrow=nrow)
+    save_image_grid(
+        samples.clamp(-1.0, 1.0),
+        args.save_path,
+        nrow=nrow,
+        padding=args.padding,
+        upscale=args.upscale,
+    )
     print(f"Saved {args.sampler.upper()} samples to: {args.save_path}")
     print(f"Saved sample config to: {args.config_out}")
 
