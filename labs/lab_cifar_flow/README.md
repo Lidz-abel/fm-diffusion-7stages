@@ -158,3 +158,37 @@ Each run writes:
 - resolved runtime config under `results/cifar_flow/config_used_*.json`
 - training loss CSV under `results/cifar_flow/training_log_*.csv`
 - sample or metric outputs under `figures/cifar_flow/` and `results/cifar_flow/`
+
+## Phase 4: EDM Quality Upgrade
+
+The next quality upgrade is EDM-style preconditioned denoising with Karras sigma sampling. This branch is designed to improve sharpness beyond the current DDPM/DDIM result.
+
+Run a smoke test:
+
+```bash
+CUDA_VISIBLE_DEVICES=1 conda run -n fm_diffusion python labs/lab_cifar_flow/train_cifar10_edm_unet.py \
+  --config configs/cifar10_unet_edm_smoke.yaml \
+  --max_steps 5
+```
+
+Train the main CIFAR-10 EDM model:
+
+```bash
+CUDA_VISIBLE_DEVICES=1 conda run -n fm_diffusion python labs/lab_cifar_flow/train_cifar10_edm_unet.py \
+  --config configs/cifar10_unet_edm_500ep.yaml
+```
+
+Sample the EDM model:
+
+```bash
+CUDA_VISIBLE_DEVICES=1 conda run -n fm_diffusion python labs/lab_cifar_flow/sample_cifar10_edm.py \
+  --config configs/cifar10_edm_sampling_500ep.yaml
+```
+
+Expected outputs:
+
+```text
+checkpoints/cifar10_unet_edm_500ep.pt
+figures/cifar_flow/edm_cifar10_500ep_heun40_cfg2_upscaled.png
+results/cifar_flow/sample_config_edm_cifar10_500ep_heun40_cfg2.json
+```

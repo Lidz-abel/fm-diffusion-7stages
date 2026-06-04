@@ -1,0 +1,40 @@
+project:
+  name: cifar10_unet_edm_quality
+  seed: 42
+
+model:
+  base_channels: 192
+  time_dim: 512
+  num_classes: 10
+  null_label: 10
+  use_attention: true
+  time_scale: 1.0
+
+edm:
+  sigma_data: 0.5
+  p_mean: -1.2
+  p_std: 1.2
+  drop_label_prob: 0.1
+
+train:
+  epochs: 500
+  batch_size: 96
+  lr: 0.0002
+  weight_decay: 0.0
+  grad_clip: 1.0
+  use_amp: true
+  use_ema: true
+  ema_decay: 0.999
+  warmup_steps: 5000
+  scheduler: cosine
+  gradient_accumulation_steps: 2
+  device: cuda
+  data_dir: data
+  num_workers: 8
+  save_every: 10000
+
+paths:
+  save_path: checkpoints/cifar10_unet_edm_500ep.pt
+  log_path: results/cifar_flow/training_log_edm_500ep.csv
+  config_path: results/cifar_flow/config_used_edm_500ep.json
+  curve_path: figures/cifar_flow/training_curve_edm_500ep.png
