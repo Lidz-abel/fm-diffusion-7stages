@@ -4,7 +4,11 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from torch.utils.data import DataLoader
+from PIL import ImageFile
 from torchvision import datasets, transforms
+
+
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 @dataclass

@@ -1,0 +1,21 @@
+model:
+  ckpt: checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt
+  use_ema: true
+
+sample:
+  class_ids: [0, 1, 2, 3, 4, 5, 6, 7]
+  num_per_class: 4
+  cfg_scale: 2.0
+  sigma_data: 0.5
+  sigma_min: 0.002
+  sigma_max: 80.0
+  rho: 7.0
+  num_steps: 50
+  solver: heun
+  device: cuda
+  upscale: 2
+  padding: 2
+
+output:
+  save_path: figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png
+  config_out: results/visual64/sample_config_pets_imagefolder_edm_300ep_heun50_cfg2.json

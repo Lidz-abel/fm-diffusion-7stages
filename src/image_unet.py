@@ -68,6 +68,8 @@ class CIFAR10FlowUNet(nn.Module):
         null_label: int = 10,
         use_attention: bool = False,
         time_scale: float = 1000.0,
+        image_size: int = 32,
+        attention_resolutions: list[int] | tuple[int, ...] | None = None,
     ):
         super().__init__()
         if null_label < num_classes:
@@ -80,6 +82,15 @@ class CIFAR10FlowUNet(nn.Module):
         self.null_label = null_label
         self.use_attention = use_attention
         self.time_scale = time_scale
+        self.image_size = image_size
+
+        if attention_resolutions is None:
+            attention_resolutions = (
+                [image_size // 2, image_size // 4, image_size // 8]
+                if use_attention
+                else []
+            )
+        self.attention_resolutions = set(int(resolution) for resolution in attention_resolutions)
 
         self.time_embedding = SinusoidalTimeEmbedding(emb_dim)
         self.class_embedding = nn.Embedding(null_label + 1, emb_dim)
@@ -91,15 +102,15 @@ class CIFAR10FlowUNet(nn.Module):
         self.downsample1 = nn.Conv2d(c, c, kernel_size=4, stride=2, padding=1)
 
         self.down2 = ImageResBlock(c, c * 2, emb_dim)
-        self.attn16 = SelfAttention2d(c * 2) if use_attention else nn.Identity()
+        self.attn16 = SelfAttention2d(c * 2) if image_size // 2 in self.attention_resolutions else nn.Identity()
         self.downsample2 = nn.Conv2d(c * 2, c * 2, kernel_size=4, stride=2, padding=1)
 
         self.down3 = ImageResBlock(c * 2, c * 4, emb_dim)
-        self.attn8 = SelfAttention2d(c * 4) if use_attention else nn.Identity()
+        self.attn8 = SelfAttention2d(c * 4) if image_size // 4 in self.attention_resolutions else nn.Identity()
         self.downsample3 = nn.Conv2d(c * 4, c * 4, kernel_size=4, stride=2, padding=1)
 
         self.middle1 = ImageResBlock(c * 4, c * 4, emb_dim)
-        self.middle_attn = SelfAttention2d(c * 4) if use_attention else nn.Identity()
+        self.middle_attn = SelfAttention2d(c * 4) if image_size // 8 in self.attention_resolutions else nn.Identity()
         self.middle2 = ImageResBlock(c * 4, c * 4, emb_dim)
 
         self.upsample1 = nn.ConvTranspose2d(c * 4, c * 4, kernel_size=4, stride=2, padding=1)

@@ -88,6 +88,8 @@ def load_model(ckpt_path: Path, device: torch.device, use_ema: bool):
         null_label=ckpt_args["null_label"],
         use_attention=ckpt_args.get("use_attention", True),
         time_scale=ckpt_args.get("time_scale", 1.0),
+        image_size=ckpt_args.get("image_size", 64),
+        attention_resolutions=ckpt_args.get("attention_resolutions"),
     ).to(device)
     if use_ema and checkpoint.get("ema") is not None:
         model.load_state_dict(checkpoint["ema"]["model"])

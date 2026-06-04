@@ -93,12 +93,26 @@ results/visual64/config_used_imagefolder_edm_smoke.json
 results/visual64/sample_config_imagefolder_edm_smoke.json
 ```
 
-Pets dataset initialization was attempted, but the environment did not produce download progress. Use either:
+Pets dataset initialization initially stalled while relying on the torchvision wrapper. The downloaded image archive was partially extractable and produced 7192 usable images, enough for the visual branch. These images were organized into:
+
+```text
+data/visual64/pets_imagefolder
+```
+
+This is now the preferred visual64 launch path. Use either:
 
 - a prepared ImageFolder dataset, or
 - rerun Pets once network/download availability is confirmed.
 
-Recommended Pets launch:
+Recommended ImageFolder Pets launch:
+
+```bash
+tmux new -s visual64_pets_imagefolder_edm_300ep
+CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
+  --config configs/visual64_pets_imagefolder_edm_300ep.yaml 2>&1 | tee logs/visual64_pets_imagefolder_edm_300ep.log
+```
+
+Alternative torchvision Pets launch:
 
 ```bash
 tmux new -s visual64_pets_edm_300ep

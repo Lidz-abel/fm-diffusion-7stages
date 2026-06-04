@@ -12,6 +12,7 @@ model:
   base_channels: 32
   time_dim: 128
   use_attention: true
+  attention_resolutions: [16, 8]
   time_scale: 1.0
 
 edm:

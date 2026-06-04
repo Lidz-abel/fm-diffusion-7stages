@@ -1,12 +1,12 @@
 project:
-  name: pets64_unet_edm_visual_showcase
+  name: pets64_imagefolder_unet_edm_visual_showcase
   seed: 42
 
 data:
-  dataset: pets
-  data_dir: data/visual64
+  dataset: imagefolder
+  data_dir: data/visual64/pets_imagefolder
   image_size: 64
-  download: true
+  download: false
 
 model:
   base_channels: 128
@@ -38,7 +38,7 @@ train:
   save_every: 5000
 
 paths:
-  save_path: checkpoints/visual64_pets_unet_edm_300ep.pt
-  log_path: results/visual64/training_log_pets_edm_300ep.csv
-  config_path: results/visual64/config_used_pets_edm_300ep.json
-  curve_path: figures/visual64/training_curve_pets_edm_300ep.png
+  save_path: checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt
+  log_path: results/visual64/training_log_pets_imagefolder_edm_300ep.csv
+  config_path: results/visual64/config_used_pets_imagefolder_edm_300ep.json
+  curve_path: figures/visual64/training_curve_pets_imagefolder_edm_300ep.png

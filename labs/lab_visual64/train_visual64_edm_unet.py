@@ -42,6 +42,7 @@ def load_config_defaults(config_path: Path) -> dict:
         "base_channels",
         "time_dim",
         "use_attention",
+        "attention_resolutions",
         "time_scale",
         "sigma_data",
         "p_mean",
@@ -82,6 +83,7 @@ def parse_args():
     parser.add_argument("--base_channels", type=int, default=128)
     parser.add_argument("--time_dim", type=int, default=512)
     parser.add_argument("--use_attention", action="store_true")
+    parser.add_argument("--attention_resolutions", type=int, nargs="*", default=None)
     parser.add_argument("--time_scale", type=float, default=1.0)
     parser.add_argument("--sigma_data", type=float, default=0.5)
     parser.add_argument("--p_mean", type=float, default=-1.2)
@@ -179,6 +181,8 @@ def main():
         null_label=null_label,
         use_attention=args.use_attention,
         time_scale=args.time_scale,
+        image_size=args.image_size,
+        attention_resolutions=args.attention_resolutions,
     ).to(device)
     optimizer = AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     total_batches = len(dataloader) * args.epochs

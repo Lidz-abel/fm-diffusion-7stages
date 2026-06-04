@@ -37,6 +37,23 @@ figures/visual64/training_curve_pets_edm_smoke.png
 
 ## Main Training
 
+Preferred launch with the prepared ImageFolder dataset:
+
+```bash
+CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
+  --config configs/visual64_pets_imagefolder_edm_300ep.yaml
+```
+
+Recommended tmux launch:
+
+```bash
+tmux new -s visual64_pets_imagefolder_edm_300ep
+CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
+  --config configs/visual64_pets_imagefolder_edm_300ep.yaml 2>&1 | tee logs/visual64_pets_imagefolder_edm_300ep.log
+```
+
+Alternative launch through the torchvision Pets dataset wrapper:
+
 ```bash
 CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
   --config configs/visual64_pets_edm_300ep.yaml
@@ -52,6 +69,15 @@ CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_
 
 ## Sampling
 
+Sample the prepared ImageFolder model:
+
+```bash
+CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
+  --config configs/visual64_pets_imagefolder_edm_sampling_300ep.yaml
+```
+
+Sample the torchvision Pets model:
+
 ```bash
 CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
   --config configs/visual64_pets_edm_sampling_300ep.yaml
@@ -62,6 +88,8 @@ Expected output:
 ```text
 figures/visual64/pets64_edm_300ep_heun50_cfg2.png
 results/visual64/sample_config_pets64_edm_300ep_heun50_cfg2.json
+figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png
+results/visual64/sample_config_pets_imagefolder_edm_300ep_heun50_cfg2.json
 ```
 
 ## Why This Branch Exists
