@@ -1,0 +1,31 @@
+experiment:
+  name: cifar10_metrics_edm_resume_300ep_1k
+  seed: 45
+
+model:
+  ckpt: checkpoints/cifar10_unet_edm_resume_300ep.pt
+  use_ema: true
+
+sample:
+  solver: heun
+  cfg_scale: 2.0
+  sigma_data: 0.5
+  sigma_min: 0.002
+  sigma_max: 80.0
+  rho: 7.0
+  num_steps: 40
+
+metrics:
+  num_samples: 1000
+  batch_size: 64
+  real_batch_size: 128
+  real_split: train
+  pretrained_inception: true
+  inception_splits: 10
+  device: cuda
+  num_workers: 4
+
+output:
+  save_grid: figures/cifar_flow/metrics_edm_resume_300ep_1k_preview.png
+  json_path: results/cifar_flow/metrics_edm_resume_300ep_1k.json
+  csv_path: results/cifar_flow/metrics_edm_final.csv

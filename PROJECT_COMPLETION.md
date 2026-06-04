@@ -62,8 +62,27 @@ Current state:
 
 ```text
 Initial EDM run reached an epoch-20 checkpoint.
-Next run resumes from that checkpoint using:
+The active resume run continues from that checkpoint using:
 configs/cifar10_unet_edm_resume_300ep.yaml
+```
+
+Current intermediate evidence:
+
+```text
+midrun checkpoint: checkpoints/cifar10_unet_edm_resume_300ep.pt
+midrun samples:
+figures/cifar_flow/edm_cifar10_resume_ep155_raw_heun40_cfg2_upscaled.png
+figures/cifar_flow/edm_cifar10_resume_ep155_ema_heun40_cfg2_upscaled.png
+training log:
+results/cifar_flow/training_log_edm_resume_300ep.csv
+```
+
+The EDM metric evaluator is now available:
+
+```text
+labs/lab_cifar_flow/eval_cifar10_edm_metrics.py
+configs/cifar10_metrics_edm_resume_300ep_1k.yaml
+configs/cifar10_metrics_edm_resume_300ep_5k.yaml
 ```
 
 ### Visual64 EDM
@@ -113,6 +132,20 @@ conda run -n fm_diffusion python labs/lab_cifar_flow/train_cifar10_edm_unet.py \
   --config configs/cifar10_unet_edm_resume_300ep.yaml
 ```
 
+Run quick CIFAR-10 EDM metrics after the 300-epoch checkpoint is ready:
+
+```bash
+conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py \
+  --config configs/cifar10_metrics_edm_resume_300ep_1k.yaml
+```
+
+Run formal CIFAR-10 EDM metrics:
+
+```bash
+conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py \
+  --config configs/cifar10_metrics_edm_resume_300ep_5k.yaml
+```
+
 ## Remaining Quality Work
 
 The project is presentable now, but the active quality-upgrade goal is not fully closed until the resumed CIFAR-10 EDM run is sampled and compared against the DDPM/DDIM baseline.
@@ -122,5 +155,7 @@ Required next evidence:
 ```text
 figures/cifar_flow/edm_cifar10_resume_300ep_heun40_cfg2_upscaled.png
 results/cifar_flow/sample_config_edm_cifar10_resume_300ep_heun40_cfg2.json
-optional: FID/IS for the resumed EDM checkpoint
+results/cifar_flow/metrics_edm_resume_300ep_1k.json
+optional formal metric:
+results/cifar_flow/metrics_edm_resume_300ep_5k.json
 ```

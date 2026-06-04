@@ -22,8 +22,13 @@ Files:
 src/edm.py
 labs/lab_cifar_flow/train_cifar10_edm_unet.py
 labs/lab_cifar_flow/sample_cifar10_edm.py
+labs/lab_cifar_flow/eval_cifar10_edm_metrics.py
 configs/cifar10_unet_edm_500ep.yaml
 configs/cifar10_edm_sampling_500ep.yaml
+configs/cifar10_unet_edm_resume_300ep.yaml
+configs/cifar10_edm_sampling_resume_300ep.yaml
+configs/cifar10_metrics_edm_resume_300ep_1k.yaml
+configs/cifar10_metrics_edm_resume_300ep_5k.yaml
 ```
 
 Core changes:
@@ -161,6 +166,44 @@ Intermediate CIFAR-10 EDM samples were generated at around epoch 20:
 ```text
 figures/cifar_flow/edm_cifar10_ep20_raw_heun40_cfg2_upscaled.png
 figures/cifar_flow/edm_cifar10_ep20_ema_heun40_cfg2_upscaled.png
+```
+
+The first EDM launch was interrupted after an epoch-20 checkpoint, so a resume run was started:
+
+```bash
+tmux new -s cifar10_edm_resume_300ep
+CUDA_VISIBLE_DEVICES=5 conda run -n fm_diffusion python labs/lab_cifar_flow/train_cifar10_edm_unet.py \
+  --config configs/cifar10_unet_edm_resume_300ep.yaml 2>&1 | tee logs/cifar10_edm_resume_300ep.log
+```
+
+Monitor the resume run from the CSV log rather than the tmux pane, because stdout can be buffered:
+
+```bash
+tail -f results/cifar_flow/training_log_edm_resume_300ep.csv
+```
+
+Intermediate resume samples were generated at around epoch 155:
+
+```text
+figures/cifar_flow/edm_cifar10_resume_ep155_raw_heun40_cfg2_upscaled.png
+figures/cifar_flow/edm_cifar10_resume_ep155_ema_heun40_cfg2_upscaled.png
+```
+
+The final 300-epoch checkpoint should be evaluated with:
+
+```bash
+CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/sample_cifar10_edm.py \
+  --config configs/cifar10_edm_sampling_resume_300ep.yaml
+
+CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py \
+  --config configs/cifar10_metrics_edm_resume_300ep_1k.yaml
+```
+
+If the 1k result is competitive visually and numerically, run the formal 5k metric:
+
+```bash
+CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py \
+  --config configs/cifar10_metrics_edm_resume_300ep_5k.yaml
 ```
 
 Intermediate 37-class Pets samples were generated at around epoch 29:
