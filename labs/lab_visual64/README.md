@@ -59,6 +59,13 @@ CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_
   --config configs/visual64_pets_edm_300ep.yaml
 ```
 
+Fast visual-quality branch with a binary cats-vs-dogs ImageFolder split:
+
+```bash
+CUDA_VISIBLE_DEVICES=3 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
+  --config configs/visual64_pets_binary_edm_300ep.yaml
+```
+
 Recommended tmux launch:
 
 ```bash
@@ -83,6 +90,13 @@ CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/sample
   --config configs/visual64_pets_edm_sampling_300ep.yaml
 ```
 
+Sample the binary cats-vs-dogs model:
+
+```bash
+CUDA_VISIBLE_DEVICES=3 conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
+  --config configs/visual64_pets_binary_edm_sampling_300ep.yaml
+```
+
 Expected output:
 
 ```text
@@ -90,6 +104,8 @@ figures/visual64/pets64_edm_300ep_heun50_cfg2.png
 results/visual64/sample_config_pets64_edm_300ep_heun50_cfg2.json
 figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png
 results/visual64/sample_config_pets_imagefolder_edm_300ep_heun50_cfg2.json
+figures/visual64/pets_binary_edm_300ep_heun50_cfg2.png
+results/visual64/sample_config_pets_binary_edm_300ep_heun50_cfg2.json
 ```
 
 ## Why This Branch Exists

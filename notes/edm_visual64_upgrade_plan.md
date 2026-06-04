@@ -112,6 +112,64 @@ CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_
   --config configs/visual64_pets_imagefolder_edm_300ep.yaml 2>&1 | tee logs/visual64_pets_imagefolder_edm_300ep.log
 ```
 
+## Branch 3: Visual64 Binary Pets EDM
+
+The 37-class Pets setup is useful but difficult for fast visual improvement. A simpler binary Cats vs Dogs split was created from the same extracted Oxford Pets images:
+
+```text
+data/visual64/pets_binary_imagefolder
+cat: 2350 images
+dog: 4839 images
+```
+
+This branch is expected to form recognizable 64x64 pet samples faster than the 37-class version.
+
+Files:
+
+```text
+configs/visual64_pets_binary_edm_300ep.yaml
+configs/visual64_pets_binary_edm_sampling_300ep.yaml
+```
+
+Recommended launch:
+
+```bash
+tmux new -s visual64_pets_binary_edm_300ep
+CUDA_VISIBLE_DEVICES=3 conda run -n fm_diffusion python labs/lab_visual64/train_visual64_edm_unet.py \
+  --config configs/visual64_pets_binary_edm_300ep.yaml 2>&1 | tee logs/visual64_pets_binary_edm_300ep.log
+```
+
+Sampling:
+
+```bash
+CUDA_VISIBLE_DEVICES=3 conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
+  --config configs/visual64_pets_binary_edm_sampling_300ep.yaml
+```
+
+## Current Running Jobs
+
+As of the first launch:
+
+```text
+cifar10_edm_500ep: running on GPU 1
+visual64_pets_imagefolder_edm_300ep: running on GPU 2
+visual64_pets_binary_edm_300ep: running on GPU 3
+```
+
+Intermediate CIFAR-10 EDM samples were generated at around epoch 20:
+
+```text
+figures/cifar_flow/edm_cifar10_ep20_raw_heun40_cfg2_upscaled.png
+figures/cifar_flow/edm_cifar10_ep20_ema_heun40_cfg2_upscaled.png
+```
+
+Intermediate 37-class Pets samples were generated at around epoch 29:
+
+```text
+figures/visual64/pets_imagefolder_edm_ep29_raw_heun50_cfg2.png
+figures/visual64/pets_imagefolder_edm_ep29_ema_heun50_cfg2.png
+```
+
 Alternative torchvision Pets launch:
 
 ```bash
