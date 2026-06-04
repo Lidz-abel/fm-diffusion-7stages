@@ -114,9 +114,45 @@ sample grid: figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_c
 sample config: configs/cifar10_final_showcase_cosine_vpred.yaml
 ```
 
-The next required gate is the 5k-sample metric run:
+## Final 5k Metric Result
+
+Final metric files:
 
 ```text
 results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
-metrics config: configs/cifar10_metrics_final_cosine_vpred_5k.yaml
+results/cifar_flow/metrics_ddpm_final.csv
+figures/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k_preview.png
+```
+
+Measured configuration:
+
+```text
+checkpoint: checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt
+weights: raw
+sampler: DDIM
+DDIM steps: 250
+CFG scale: 2.5
+schedule: cosine
+prediction type: v_prediction
+num samples: 5000
+real split: CIFAR-10 train
+pretrained Inception: true
+metric config: configs/cifar10_metrics_final_cosine_vpred_5k.yaml
+```
+
+Final metrics:
+
+```text
+FID: 13.3722
+Inception Score: 5.2858 +/- 0.1446
+seconds total: 1520.69
+seconds per sample: 0.3041
+```
+
+Conclusion:
+
+- The cosine v-prediction DDPM branch is the current best project-quality model.
+- It is suitable as the main README/showcase result for the CIFAR-10 image generation upgrade.
+- Rectified Flow remains useful for the learning-project narrative and sampler analysis, but it is not the strongest visual branch at the current training budget.
+- Further quality work should only target high-leverage changes such as a stronger U-Net, EDM-style preconditioning, or better augmentation/training schedules. Broad additional ablations are not needed until there is a new candidate likely to beat this result.
 ```

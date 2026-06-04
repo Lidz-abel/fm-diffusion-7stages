@@ -107,10 +107,17 @@ python labs/lab_cifar_flow/eval_cifar10_ddpm_metrics.py \
 
 ## Current Final Showcase Candidate
 
-The current best visual branch is:
+The current best visual and metric branch is:
 
 ```text
 cosine schedule + v-prediction + Attention U-Net + raw weights + DDIM 250 + CFG 2.5
+```
+
+Final 5k-sample metrics:
+
+```text
+FID: 13.3722
+Inception Score: 5.2858 +/- 0.1446
 ```
 
 Regenerate the final showcase grid:
@@ -131,6 +138,7 @@ Current output targets:
 
 ```text
 figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+figures/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k_preview.png
 results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
 results/cifar_flow/metrics_ddpm_final.csv
 ```
