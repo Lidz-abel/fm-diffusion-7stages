@@ -199,6 +199,15 @@ CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/eval
   --config configs/cifar10_metrics_edm_resume_300ep_1k.yaml
 ```
 
+For unattended completion, use the finalizer script:
+
+```bash
+tmux new -s cifar10_edm_finalizer
+/home/ldz/miniconda3/envs/fm_diffusion/bin/python labs/lab_cifar_flow/finalize_cifar10_edm_resume.py \
+  --gpu 0 \
+  --target_epoch 300
+```
+
 If the 1k result is competitive visually and numerically, run the formal 5k metric:
 
 ```bash

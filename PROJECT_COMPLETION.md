@@ -139,6 +139,14 @@ conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py
   --config configs/cifar10_metrics_edm_resume_300ep_1k.yaml
 ```
 
+Or wait for the 300-epoch checkpoint and run final sampling plus quick metrics automatically:
+
+```bash
+/home/ldz/miniconda3/envs/fm_diffusion/bin/python labs/lab_cifar_flow/finalize_cifar10_edm_resume.py \
+  --gpu 0 \
+  --target_epoch 300
+```
+
 Run formal CIFAR-10 EDM metrics:
 
 ```bash
