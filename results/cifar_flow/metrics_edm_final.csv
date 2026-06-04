@@ -1,0 +1,2 @@
+checkpoint,use_ema,sampler,solver,num_samples,batch_size,cfg_scale,sigma_data,sigma_min,sigma_max,rho,num_steps,pretrained_inception,real_split,fid,inception_score_mean,inception_score_std,seconds_total,seconds_per_sample,seed
+checkpoints/cifar10_unet_edm_resume_300ep.pt,True,edm,heun,1000,64,2.0,0.5,0.002,80.0,7.0,40,True,train,41.49597311312476,5.006211280822754,0.4826022982597351,177.65885257720947,0.17765885257720948,42

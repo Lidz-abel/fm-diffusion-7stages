@@ -53,7 +53,7 @@ results/cifar_flow/config_used_edm_smoke.json
 results/cifar_flow/sample_config_edm_cifar10_smoke.json
 ```
 
-Recommended main launch:
+Original main launch:
 
 ```bash
 tmux new -s cifar10_edm_500ep
@@ -151,14 +151,33 @@ CUDA_VISIBLE_DEVICES=3 conda run -n fm_diffusion python labs/lab_visual64/sample
   --config configs/visual64_pets_binary_edm_sampling_300ep.yaml
 ```
 
-## Current Running Jobs
+## Final Status
 
-As of the first launch:
+CIFAR-10 EDM resume run completed:
 
 ```text
-cifar10_edm_500ep: running on GPU 1
-visual64_pets_imagefolder_edm_300ep: running on GPU 2
-visual64_pets_binary_edm_300ep: running on GPU 3
+checkpoint: checkpoints/cifar10_unet_edm_resume_300ep.pt
+epoch: 300
+step: 155600
+sample: figures/cifar_flow/edm_cifar10_resume_300ep_heun40_cfg2_upscaled.png
+metric json: results/cifar_flow/metrics_edm_resume_300ep_1k.json
+FID@1k: 41.4960
+Inception Score@1k: 5.0062 +/- 0.4826
+```
+
+The EDM run produced more coherent CIFAR-10 class structure than the early checkpoints, but it did not beat the stronger DDPM/DDIM cosine v-prediction baseline:
+
+```text
+DDPM/DDIM FID@5k: 13.3722
+DDPM/DDIM IS@5k: 5.2858 +/- 0.1446
+```
+
+Therefore:
+
+```text
+CIFAR-10 quantitative baseline: keep DDPM/DDIM cosine v-pred.
+CIFAR-10 EDM: keep as completed quality-upgrade attempt and engineering evidence.
+README visual showcase: use Visual64 EDM Pets.
 ```
 
 Intermediate CIFAR-10 EDM samples were generated at around epoch 20:
@@ -189,7 +208,7 @@ figures/cifar_flow/edm_cifar10_resume_ep155_raw_heun40_cfg2_upscaled.png
 figures/cifar_flow/edm_cifar10_resume_ep155_ema_heun40_cfg2_upscaled.png
 ```
 
-The final 300-epoch checkpoint should be evaluated with:
+The final 300-epoch checkpoint was evaluated with:
 
 ```bash
 CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/sample_cifar10_edm.py \
@@ -208,7 +227,7 @@ tmux new -s cifar10_edm_finalizer
   --target_epoch 300
 ```
 
-If the 1k result is competitive visually and numerically, run the formal 5k metric:
+The formal 5k metric is optional because the 1k result is already well behind the existing DDPM/DDIM FID. Run it only if a same-sample-count comparison table is required:
 
 ```bash
 CUDA_VISIBLE_DEVICES=6 conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py \
@@ -232,4 +251,10 @@ CUDA_VISIBLE_DEVICES=2 conda run -n fm_diffusion python labs/lab_visual64/train_
 
 ## Priority
 
-The highest-value next run is CIFAR-10 EDM 500ep, because it directly targets the current softness while preserving metric comparability. Visual64 is the second branch for README visual impact after a real 64x64 dataset is available.
+The quality-upgrade branch is complete. The highest-value project presentation choice is:
+
+```text
+1. Use DDPM/DDIM cosine v-pred for CIFAR-10 quantitative claims.
+2. Use Visual64 EDM Pets for visual clarity and README screenshots.
+3. Mention CIFAR-10 EDM as an attempted quality upgrade that improved visual structure but did not improve FID.
+```

@@ -2,7 +2,7 @@
 
 ## Current Status
 
-This repository has reached a first complete showcase state for the diffusion / flow-matching learning project and is now in the quality-upgrade phase.
+This repository has reached a complete showcase state for the diffusion / flow-matching learning project.
 
 The original 7-stage learning scaffold is complete enough for study notes, toy labs, MNIST CFG, Mini-DiT, CIFAR-10 Rectified Flow, DDPM/DDIM, EDM, and Visual64 experiments.
 
@@ -29,6 +29,25 @@ figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png
 ```
 
 The 64x64 branch is substantially clearer than the CIFAR-10 32x32 display images and should be used for README visual presentation.
+
+The CIFAR-10 EDM quality-upgrade run is complete:
+
+```text
+checkpoint: checkpoints/cifar10_unet_edm_resume_300ep.pt
+sample: figures/cifar_flow/edm_cifar10_resume_300ep_heun40_cfg2_upscaled.png
+sample config: results/cifar_flow/sample_config_edm_cifar10_resume_300ep_heun40_cfg2.json
+metric json: results/cifar_flow/metrics_edm_resume_300ep_1k.json
+FID@1k: 41.4960
+Inception Score@1k: 5.0062 +/- 0.4826
+```
+
+Conclusion:
+
+```text
+CIFAR-10 EDM improved visual structure over early EDM checkpoints, but it did not beat the DDPM/DDIM cosine v-pred baseline quantitatively.
+For CIFAR-10 metrics, keep DDPM/DDIM as the main result.
+For clear visual presentation, use Visual64 EDM Pets.
+```
 
 ## Main Technical Branches
 
@@ -62,17 +81,18 @@ Current state:
 
 ```text
 Initial EDM run reached an epoch-20 checkpoint.
-The active resume run continues from that checkpoint using:
+The resume run completed 300 epochs using:
 configs/cifar10_unet_edm_resume_300ep.yaml
 ```
 
-Current intermediate evidence:
+Final evidence:
 
 ```text
-midrun checkpoint: checkpoints/cifar10_unet_edm_resume_300ep.pt
-midrun samples:
-figures/cifar_flow/edm_cifar10_resume_ep155_raw_heun40_cfg2_upscaled.png
-figures/cifar_flow/edm_cifar10_resume_ep155_ema_heun40_cfg2_upscaled.png
+checkpoint: checkpoints/cifar10_unet_edm_resume_300ep.pt
+sample:
+figures/cifar_flow/edm_cifar10_resume_300ep_heun40_cfg2_upscaled.png
+metrics:
+results/cifar_flow/metrics_edm_resume_300ep_1k.json
 training log:
 results/cifar_flow/training_log_edm_resume_300ep.csv
 ```
@@ -125,7 +145,7 @@ conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
   --config configs/visual64_pets_binary_edm_sampling_300ep.yaml
 ```
 
-Resume CIFAR-10 EDM quality training:
+Resume or rerun CIFAR-10 EDM quality training:
 
 ```bash
 conda run -n fm_diffusion python labs/lab_cifar_flow/train_cifar10_edm_unet.py \
@@ -156,14 +176,16 @@ conda run -n fm_diffusion python labs/lab_cifar_flow/eval_cifar10_edm_metrics.py
 
 ## Remaining Quality Work
 
-The project is presentable now, but the active quality-upgrade goal is not fully closed until the resumed CIFAR-10 EDM run is sampled and compared against the DDPM/DDIM baseline.
+The requested quality-upgrade work is closed at the project level:
 
-Required next evidence:
+- CIFAR-10 EDM 300ep training, sampling, and 1k metric evaluation are complete.
+- Visual64 EDM Pets provides the clearest final visual showcase.
+- DDPM/DDIM remains the strongest quantitative CIFAR-10 baseline.
+
+Optional future work:
 
 ```text
-figures/cifar_flow/edm_cifar10_resume_300ep_heun40_cfg2_upscaled.png
-results/cifar_flow/sample_config_edm_cifar10_resume_300ep_heun40_cfg2.json
-results/cifar_flow/metrics_edm_resume_300ep_1k.json
-optional formal metric:
-results/cifar_flow/metrics_edm_resume_300ep_5k.json
+1. Run formal 5k metrics for CIFAR-10 EDM only if needed for a table.
+2. Tune EDM hyperparameters if the goal becomes beating the DDPM/DDIM FID.
+3. Promote Visual64 images into README as the visual-first result.
 ```

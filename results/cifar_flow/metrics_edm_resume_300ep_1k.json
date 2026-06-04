@@ -1,0 +1,22 @@
+{
+  "batch_size": 64,
+  "cfg_scale": 2.0,
+  "checkpoint": "checkpoints/cifar10_unet_edm_resume_300ep.pt",
+  "fid": 41.49597311312476,
+  "inception_score_mean": 5.006211280822754,
+  "inception_score_std": 0.4826022982597351,
+  "num_samples": 1000,
+  "num_steps": 40,
+  "pretrained_inception": true,
+  "real_split": "train",
+  "rho": 7.0,
+  "sampler": "edm",
+  "seconds_per_sample": 0.17765885257720948,
+  "seconds_total": 177.65885257720947,
+  "seed": 42,
+  "sigma_data": 0.5,
+  "sigma_max": 80.0,
+  "sigma_min": 0.002,
+  "solver": "heun",
+  "use_ema": true
+}
