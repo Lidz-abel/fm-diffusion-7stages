@@ -105,6 +105,36 @@ python labs/lab_cifar_flow/eval_cifar10_ddpm_metrics.py \
   --config configs/cifar10_metrics_ddpm_cosine_vpred.yaml
 ```
 
+## Current Final Showcase Candidate
+
+The current best visual branch is:
+
+```text
+cosine schedule + v-prediction + Attention U-Net + raw weights + DDIM 250 + CFG 2.5
+```
+
+Regenerate the final showcase grid:
+
+```bash
+python labs/lab_cifar_flow/sample_cifar10_ddpm.py \
+  --config configs/cifar10_final_showcase_cosine_vpred.yaml
+```
+
+Run the 5k-sample final metric evaluation:
+
+```bash
+python labs/lab_cifar_flow/eval_cifar10_ddpm_metrics.py \
+  --config configs/cifar10_metrics_final_cosine_vpred_5k.yaml
+```
+
+Current output targets:
+
+```text
+figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
+results/cifar_flow/metrics_ddpm_final.csv
+```
+
 Each run writes:
 
 - checkpoint under `checkpoints/`

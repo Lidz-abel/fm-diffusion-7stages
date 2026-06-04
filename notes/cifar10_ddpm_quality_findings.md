@@ -111,10 +111,12 @@ sampler: DDIM
 DDIM steps: 250
 CFG scale: 2.5
 sample grid: figures/cifar_flow/final_candidate_cosine_vpred_raw_500ep_ddim250_cfg2.5.png
+sample config: configs/cifar10_final_showcase_cosine_vpred.yaml
 ```
 
 The next required gate is the 5k-sample metric run:
 
 ```text
 results/cifar_flow/metrics_ddpm_cosine_vpred_raw_cfg25_5k.json
+metrics config: configs/cifar10_metrics_final_cosine_vpred_5k.yaml
 ```
