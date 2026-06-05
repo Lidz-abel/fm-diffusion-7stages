@@ -22,13 +22,25 @@ The strongest visual result so far is the 64x64 EDM Pets branch:
 
 ```text
 binary cats-vs-dogs:
-figures/visual64/pets_binary_edm_300ep_heun50_cfg2.png
+figures/visual64/visual64_best_binary_pets_heun80_cfg2.png
 
 37-class Pets:
-figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png
+figures/visual64/visual64_best_37class_pets_heun80_cfg2.png
+
+final panel:
+figures/visual64/final_visual64_showcase_panel.png
 ```
 
 The 64x64 branch is substantially clearer than the CIFAR-10 32x32 display images and should be used for README visual presentation.
+
+Final Visual64 sampling choice:
+
+```text
+solver: Heun
+steps: 80
+cfg_scale: 2.0
+reason: stable structure, no clear benefit from cfg=3, and slightly steadier detail than 30/50 steps.
+```
 
 The CIFAR-10 EDM quality-upgrade run is complete:
 
@@ -143,6 +155,28 @@ Regenerate binary Pets64 EDM showcase:
 ```bash
 conda run -n fm_diffusion python labs/lab_visual64/sample_visual64_edm.py \
   --config configs/visual64_pets_binary_edm_sampling_300ep.yaml
+```
+
+Regenerate the Visual64 sampling sweep and final panel:
+
+```bash
+python labs/lab_visual64/eval_visual64_sampling_sweep.py \
+  --config configs/visual64_pets_binary_edm_sampling_300ep.yaml \
+  --tag pets_binary \
+  --class_ids 0 1 \
+  --num_per_class 2 \
+  --cfg_scales 1.0 1.5 2.0 3.0 \
+  --num_steps_list 30 50 80
+
+python labs/lab_visual64/eval_visual64_sampling_sweep.py \
+  --config configs/visual64_pets_imagefolder_edm_sampling_300ep.yaml \
+  --tag pets_37class \
+  --class_ids 0 1 2 3 4 5 6 7 \
+  --num_per_class 1 \
+  --cfg_scales 1.0 1.5 2.0 3.0 \
+  --num_steps_list 30 50 80
+
+python labs/lab_visual64/make_final_visual64_showcase.py
 ```
 
 Resume or rerun CIFAR-10 EDM quality training:

@@ -1,0 +1,299 @@
+{
+  "args": {
+    "cfg_scale": 2.0,
+    "cfg_scales": [
+      1.0,
+      1.5,
+      2.0,
+      3.0
+    ],
+    "ckpt": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+    "class_ids": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "config": "configs/visual64_pets_imagefolder_edm_sampling_300ep.yaml",
+    "config_out": "results/visual64/sample_config_pets_imagefolder_edm_300ep_heun50_cfg2.json",
+    "device": "cuda",
+    "num_per_class": 1,
+    "num_steps": 50,
+    "num_steps_list": [
+      30,
+      50,
+      80
+    ],
+    "output_dir": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep",
+    "padding": 2,
+    "results_dir": "/home/ldz/fm-diffusion-flowdcn-7stages/results/visual64/sampling_sweep",
+    "rho": 7.0,
+    "save_path": "figures/visual64/pets_imagefolder_edm_300ep_heun50_cfg2.png",
+    "seed": 123,
+    "sigma_data": 0.5,
+    "sigma_max": 80.0,
+    "sigma_min": 0.002,
+    "solver": "heun",
+    "tag": "pets_37class",
+    "upscale": 2,
+    "use_ema": true
+  },
+  "runs": [
+    {
+      "cfg_scale": 1.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 30,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps30_cfg1.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 1.5,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 30,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps30_cfg1.5.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 2.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 30,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps30_cfg2.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 3.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 30,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps30_cfg3.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 1.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 50,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps50_cfg1.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 1.5,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 50,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps50_cfg1.5.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 2.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 50,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps50_cfg2.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 3.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 50,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps50_cfg3.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 1.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 80,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps80_cfg1.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 1.5,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 80,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps80_cfg1.5.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 2.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 80,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps80_cfg2.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    },
+    {
+      "cfg_scale": 3.0,
+      "checkpoint": "checkpoints/visual64_pets_imagefolder_unet_edm_300ep.pt",
+      "class_ids": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "num_per_class": 1,
+      "num_steps": 80,
+      "save_path": "/home/ldz/fm-diffusion-flowdcn-7stages/figures/visual64/sampling_sweep/pets_37class/pets_37class_steps80_cfg3.png",
+      "seed": 123,
+      "solver": "heun",
+      "tag": "pets_37class",
+      "use_ema": true
+    }
+  ]
+}
