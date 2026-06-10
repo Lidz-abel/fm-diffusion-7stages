@@ -1,0 +1,10 @@
+{
+  "left": "figures/visual64/sampling_sweep/pets_cfg_figure/pets_cfg_figure_steps80_cfg0.png",
+  "right": "figures/visual64/sampling_sweep/pets_cfg_figure/pets_cfg_figure_steps80_cfg4.png",
+  "save_path": "figures/visual64/cfg_w0_vs_w4_panel.png",
+  "class_name": "Oxford-IIIT Pets classes",
+  "left_title": "without classifier-free guidance, w=0",
+  "right_title": "classifier-free guidance, w=4",
+  "title": "Visual64 class-based classifier-free guidance",
+  "caption": "Same checkpoint, class ids, seed, solver, and number of sampling steps. Increasing guidance strengthens class adherence, but very large guidance can reduce diversity."
+}
