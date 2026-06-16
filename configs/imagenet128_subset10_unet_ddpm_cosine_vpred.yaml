@@ -1,0 +1,52 @@
+project:
+  name: imagenet128_subset10_unet_ddpm_cosine_vpred
+  seed: 42
+
+data:
+  dataset: imagefolder
+  data_dir: data/imagenet128_subset10/train
+  image_size: 128
+  in_channels: 3
+  num_classes: 10
+
+model:
+  type: class_cond_unet
+  in_channels: 3
+  base_channels: 128
+  time_dim: 512
+  channel_mult: [1, 2, 3, 4]
+  attention_resolutions: [32, 16, 8]
+  num_classes: 10
+  null_label: 10
+  use_attention: true
+  time_scale: 1.0
+
+diffusion:
+  timesteps: 1000
+  schedule_type: cosine
+  cosine_s: 0.008
+  prediction_type: v_prediction
+  beta_start: 0.0001
+  beta_end: 0.02
+  drop_label_prob: 0.1
+
+train:
+  epochs: 100
+  batch_size: 64
+  gradient_accumulation_steps: 2
+  lr: 0.0001
+  weight_decay: 0.0
+  grad_clip: 1.0
+  use_amp: true
+  use_ema: true
+  ema_decay: 0.9999
+  warmup_steps: 5000
+  scheduler: cosine
+  device: cuda
+  num_workers: 8
+  save_every: 5000
+
+paths:
+  save_path: checkpoints/imagenet128_subset10_unet_ddpm_cosine_vpred.pt
+  log_path: results/imagenet128_cfg/training_log_subset10.csv
+  config_path: results/imagenet128_cfg/config_used_subset10.json

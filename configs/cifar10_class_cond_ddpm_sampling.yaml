@@ -1,0 +1,32 @@
+model:
+  ckpt: checkpoints/cifar10_unet_ddpm_cosine_vpred_500ep.pt
+  use_ema: false
+  image_size: 32
+  in_channels: 3
+  num_classes: 10
+  null_label: 10
+
+diffusion:
+  timesteps: 1000
+  schedule_type: cosine
+  cosine_s: 0.008
+  prediction_type: v_prediction
+  beta_start: 0.0001
+  beta_end: 0.02
+
+sample:
+  all_classes: true
+  num_per_class: 2
+  cfg_scale: 2.5
+  sampler: ddim
+  ddim_steps: 20
+  ddim_eta: 0.0
+  clip_x0: false
+  device: cuda
+  upscale: 4
+  padding: 2
+  seed: 42
+
+output:
+  save_path: figures/image_cfg/cifar10_generic_ddim20_cfg2.5.png
+  config_out: results/image_cfg/sample_config_cifar10_generic_ddim20_cfg2.5.json

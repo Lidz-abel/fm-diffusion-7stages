@@ -221,40 +221,78 @@ same sampler
 same steps
 ```
 
-## 7. After Stage 8A
+## 7. Stage 8B Status
 
-Next planned stage:
+Stage 8B has been completed at the code-smoke level.
 
-```text
-Stage 8B: generalize image_size / num_classes support.
-```
-
-Main goal:
-
-```text
-Move from Visual64-specific scripts toward reusable class-conditional image generation scripts.
-```
-
-Likely files:
+Completed files:
 
 ```text
 src/class_cond_unet.py
 src/image_dataset.py
 src/imagenet_dataset.py
-src/image_sampling_utils.py
-src/image_metrics.py
 
-labs/lab_image_cfg/train_class_cond_ddpm_unet.py
+labs/lab_image_cfg/README.md
+labs/lab_image_cfg/debug_shape_test.py
 labs/lab_image_cfg/sample_class_cond_ddpm_cfg.py
-labs/lab_image_cfg/eval_class_cond_metrics.py
+labs/lab_image_cfg/train_class_cond_ddpm_unet.py
+
+configs/class_cond_ddpm_unet_template.yaml
+configs/cifar10_class_cond_ddpm_sampling.yaml
+configs/imagenet128_subset10_unet_ddpm_cosine_vpred.yaml
+configs/imagenet128_subset10_sampling.yaml
+
+reports/stage8b_generic_image_cfg.md
 ```
 
-This can now proceed because Stage 8A has produced the w=0 vs w=4 visual panel.
+Verified behavior:
 
-## 8. Notes for the Next Agent
+```text
+image_size = 32 / 64 / 128
+num_classes = 10 / 37 / 1000
+null_label = num_classes
+generic DDPM/DDIM CFG sampling without hard-coded 32x32 shape
+one-step generic DDPM training smoke
+old CIFAR-10 checkpoint sampled through the generic script
+```
+
+GPU usage:
+
+```text
+GPU 1: shape tests and CIFAR generic sampling
+GPU 3: 128x128 / 1000-class shape test and training smoke
+```
+
+Representative outputs:
+
+```text
+figures/image_cfg/cifar10_generic_ddim20_cfg2.5.png
+results/image_cfg/sample_config_cifar10_generic_ddim20_cfg2.5.json
+checkpoints/class_cond_ddpm_smoke.pt
+results/image_cfg/training_log_smoke.csv
+results/image_cfg/config_used_smoke.json
+```
+
+Stage 8B report:
+
+```text
+reports/stage8b_generic_image_cfg.md
+```
+
+## 8. Next Stage
+
+Next planned stage:
+
+```text
+Stage 8C: ImageNet-128 subset10 data preparation and sanity training.
+```
+
+The next step is to prepare an ImageFolder-compatible subset containing the target Figure-11 class, such as `corgi dog`, then train a 10-class 128x128 model and compare `w=0` vs `w=4`.
+
+## 9. Notes for the Next Agent
 
 - Do not delete existing checkpoints, logs, results, or figures.
 - Preserve every config used for each experiment.
 - If running a long GPU job, use `tmux` and log to `logs/`.
 - Stage 8A has been completed; do not regress or overwrite its final panel unless intentionally rerunning the same comparison.
-- The current environment used for this handoff did not expose a usable CUDA device, so full Stage 8A sampling should be run in a GPU-capable shell.
+- Stage 8B has been completed with smoke tests; do not start ImageNet-1k before Stage 8C subset10 is working.

@@ -1,0 +1,53 @@
+project:
+  name: class_cond_ddpm_unet_template
+  seed: 42
+
+data:
+  dataset: synthetic
+  data_dir: data
+  image_size: 128
+  in_channels: 3
+  num_classes: 1000
+  synthetic_samples: 8
+
+model:
+  type: class_cond_unet
+  in_channels: 3
+  base_channels: 32
+  time_dim: 128
+  channel_mult: [1, 2, 3, 4]
+  attention_resolutions: [32, 16]
+  num_classes: 1000
+  null_label: 1000
+  use_attention: true
+  time_scale: 1.0
+
+diffusion:
+  timesteps: 1000
+  schedule_type: cosine
+  cosine_s: 0.008
+  prediction_type: v_prediction
+  beta_start: 0.0001
+  beta_end: 0.02
+  drop_label_prob: 0.1
+
+train:
+  epochs: 1
+  batch_size: 2
+  gradient_accumulation_steps: 1
+  lr: 0.0001
+  weight_decay: 0.0
+  grad_clip: 1.0
+  use_amp: true
+  use_ema: true
+  ema_decay: 0.9999
+  warmup_steps: 0
+  scheduler: none
+  device: cuda
+  num_workers: 0
+  save_every: 1000
+
+paths:
+  save_path: checkpoints/class_cond_ddpm_smoke.pt
+  log_path: results/image_cfg/training_log_smoke.csv
+  config_path: results/image_cfg/config_used_smoke.json
